@@ -1,25 +1,41 @@
 {
-  "name": "app-project-api",
-  "version": "0.1.0",
-  "description": "",
+  "name": "web-app-4-supermarket-back-end",
+  "version": "0.0.1",
   "main": "dist/main.js",
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rimraf ./dist",
     "build": "npm run clean && tsc",
-    "start": "npm run build && node ./dist/main.js",
+    "start": "npm run build && node --trace-warnings ./dist/main.js",
     "start:dev": "ts-node-dev --respawn -- src/main.ts"
   },
-  "author": "Nenad Miražić <nenadmirazic@hotmail.com>",
+  "author": "Nenad Miražić <nenad.mirazic.15@singimail.rs>",
   "license": "ISC",
   "dependencies": {
+    "ajv": "^8.11.0",
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongodb": "^4.6.0",
+    "morgan": "^1.10.0",
+    "mysql2": "^2.3.3"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.13",
     "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.21",
     "eslint": "^8.10.0",
     "rimraf": "^3.0.2",
-    "ts-node-dev": "^1.1.8"
-  }
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.4"
+  },
+  "types": "./dist\\main.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dist/main.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dist/main.js/issues"
+  },
+  "homepage": "https://github.com/dist/main.js#readme",
+  "description": ""
 }
