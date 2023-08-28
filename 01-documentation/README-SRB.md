@@ -64,7 +64,7 @@ category                                                                        
 • name                      VARCHAR     32             UQ1                      naziv
 • category_type             ENUM     {product, news, root}     D NULL           tip kategorije (za proizvod ili vesti)
 • is_deleted                TINYINT      1          NN     UN  D 0              oznаčen kao izbrisan(0=ne)
-• category_id               INT         10             UQ1 UN  D NULL  FK       strain ključ ka istoj tabeli (adjacency list)
+• category__id              INT         10             UQ1 UN  D NULL  FK       strain ključ ka istoj tabeli (adjacency list)
 
 photo                                                                           Slika
 
@@ -126,46 +126,61 @@ contact                                                                         
 
 ## Use-case dijagrami
 
-...
+- Aktivnosti po ulogama
+
+![useCase-AktivnostiPoUlogama](../02-resources/useCase-AktivnostiPoUlogama.png)
+
+- Identifikacija uopštenih aktivnosti po ulogama
+
+![useCase-IdentifikacijaUopštenihAktivnosti](../02-resources/useCase-IdentifikacijaUopštenihAktivnosti.png)
+
+- Razrada uopštenih aktivnosti po ulogama
+
+![useCase-RazradaUopštenihAktivnosti](../02-resources/useCase-RazradaUopštenihAktivnosti.png)
 
 ## Prikaz konačnog spiska pojedinačnih aktivnosti
 
 - Administrator
 
-- Uređivanje sadržaja
-  - Listanje/pregled stavki (proizvoda, vesti, galerije, poruka, stranica)
-  - Dodavanje nove kategorije
-  - Izmene kategorije
-  - Brisanje kategorije
-  - Dodavanje stranice
-  - Izmena stranice
-  - Brisanje stranice
-  - Dodavanje slike u galeriju
-  - Brisanje slike iz galerije
-  - Dodavanje proizvoda
-  - Brisanje proizvoda
-  - Izmena proizvoda
-  - Dodavanje vesti
-  - Brisanje vesti
-  - Pregled kontakt poruka
-  - Brisanje kontakt poruka
-- Izmena svog i drugih admin naloga
+- Uređivanje/pregled sadržaja      (uređuje i izlistava sadržaj)
+  - Listanje kategorija            (izlistava sve kategorije, odnosno potkategorije klikom na određenu kategoriju)
+  - Dodavanje nove kategorije      (dodaje novu kategotiju/potkategoriju prethodno odabranoj potkategoriji)
+  - Izmena kategorije              (menja ime, tip i potkategoriju određene kategorije/potkategorije)
+  - Brisanje kategorije            (biše ukoliko odabrana kategorija/potkategorija nema dece)
+  - Listanje proizvoda             (izlistava sve proizvode odabrane kategorije/potkategorije)
+  - Dodavanje proizvoda            (dodaje novi proizvod u odabranu kategoriju/potkategoriju zajedno sa slikama proizvoda)
+  - Brisanje proizvoda             (briše odabrani proizvod iz njegove kategorije/potkategorije zajedno sa pripadajućim slikama)
+  - Izmena proizvoda               (menja ime,opis,cenu,stanje zaliha,da li je na popustu,vrednost popusta,kategoriju/potkategoriju)
+  - Listanje vesti                 (izlistava sve vesti odabrane kategorije/potkategorije)
+  - Dodavanje vesti                (dodaje novu vest u odabranu kategoriju/potkategoriju zajedno sa slikama )
+  - Brisanje vesti                 (briše odabranu vest iz njene kategorije/potkategorije zajedno sa pripadajućim slikama)
+  - Izmena vesti                   (menja naslov, sadržaj, alt text, sliku, kategoriju/potkategoriju)
+  - Listanje stranica              (izlistava pojedinačne stranice prema odabranom naslovu)
+  - Dodavanje stranice             (dodaje novu stranicu)
+  - Izmena stranice                (menja naslov,sadržaj,alt text i sliku)
+  - Brisanje stranice              (briše odabranu stranicu)
+  - Listanje slika u galeriji      (izlistava sve slike u galeriji nezavisno od kategorija kojima su dodeljene)
+  - Dodavanje slike u galeriju     (dodaje novu sliku u galeriju bez dodeljivanja određenom proizvodu/vesti)
+  - Brisanje slike iz galerije     (briše slike iz galerije ukoliko već ne pripada određenom proizvodu/vesti)
+  - Pregled kontakt poruka         (izlistava sve kontakt poruke)
+  - Brisanje kontakt poruka        (briše odabranu kontakt poruku)
+- Izmena administratorskog naloga  (može da menja korisničko ime, email i password samo na svom nalogu)
 
 - Korisnik/posetilac sajta
 
-- Prijava na administratorski nalog
-- Pregledavanje stranica sajta
-  - Pregled glavne stranice(Home page)
-  - Pregled stranice galerije slika
-  - Pregled kontakt stranice
-  - Pregled kataloga proizvoda po hijerarhiji kategorija
-  - Pregled kataloga vesti po hijeararhiji kategorija
-  - Pregled ostalih stranica
-- Pretraga proizvoda
-  - Pretraga po ključnim rečima
-  - Filtriranje proizvoda (imenu, kategorijama, ceni)
-- Pregled detalja proizvoda
-  - Pregled osnovnih informacija o proizvodu (fotografija, naziv, cena)
-  - Pregled detaljnih informacija o proizvodu (opis, sastav...)
-  - Pregled sličnih proizvoda/vesti iz iste kategorije
-- Slanje kontakt poruke
+- Prijava na administratorski nalog                      (prijavljuje se na admin nalog)
+- Zahtevanje linka za novu lozinku                       (zahteva link za novu lozinku za admin pristup)
+- Pregled sadržaja svih stranica                         (pregleda sadržaj svih proizvoda, vesti, slika i ostalih stranica)
+  - Pregled kataloga proizvoda po hijerarhiji kategorija (pregleda katalog proizvoda prema izabranoj kategoriji)
+  - Pregled kataloga vesti po hijeararhiji kategorija    (pregleda katalog vesti prema izabranoj kategoriji)
+- Pretraga proizvoda                                     (vrši pretragu proizvoda)
+  - Pretraga po ključnim rečima                          (pretražije po ključnim rečima)
+  - Filtriranje proizvoda                                (pretražuje po imenu, kategoriji, ceni)
+  - Pregled rezultata pretrage proizvoda                 (pregleda rezultate pretrage proizvoda)
+    - Pregled osnovnih informacija o proizvodu           (dobija prikaz fotografije, naziva, cene proizvoda iz pretrage)
+      - Pregled detaljnih informacija o proizvodu        (klikom na link "detaljan opis" dobija detaljan opis, količinu na stanju..)
+        - Pregled sličnih proizvoda iz iste kategorije   (vidi slične proizvode iz kategorije pretraženog/odabranog proizvoda)
+- Slanje kontakt poruke                                  (šalje kontakt poruke)
+
+
+## Mockup GUI interfejsa
