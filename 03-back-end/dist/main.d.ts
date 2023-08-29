@@ -1,1 +1,1 @@
-declare let ime: number;
+export {};
