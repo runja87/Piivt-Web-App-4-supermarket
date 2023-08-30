@@ -27,7 +27,7 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                         if (rows === undefined) {
                             return resolve([]);
                         }
-                        
+
                         const items: ReturnModel[] = [];
 
                         for (const row of rows as mysql2.RowDataPacket[]) {
@@ -37,7 +37,7 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                             }
                         }
                         resolve(items);
-                        
+
 
                     })
                     .catch(error => {
@@ -45,10 +45,10 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                     });
 
             }
-            
+
         );
 
-        
+
 
 
     }
@@ -120,6 +120,9 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
 
         return new Promise((resolve, reject) => {
             const properties = Object.getOwnPropertyNames(data);
+            if (properties.length === 0) {
+                return reject({ message: 'There is nothing to add!' })
+            }
             const sqlPairs = properties.map(property => "`" + property + "` = ?").join(", ");
             const values = properties.map(property => data[property]);
             const sql: string = "INSERT `" + tableName + "` SET " + sqlPairs + ";";
@@ -144,6 +147,9 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
         const tableName = this.tableName();
         return new Promise((resolve, reject) => {
             const properties = Object.getOwnPropertyNames(data);
+            if (properties.length === 0) {
+                return reject({ message: 'There is nothing to change!' })
+            }
             const sqlPairs = properties.map(property => "`" + property + "` = ?").join(", ");
             const values = properties.map(property => data[property]);
             values.push(id);
@@ -170,16 +176,16 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
     }
     protected async baseDeleteById(id: number): Promise<boolean> {
         const tableName = this.tableName();
-    
+
         return new Promise<boolean>((resolve, reject) => {
-            
+
             this.db.execute(`DESCRIBE ${tableName} is_deleted`)
                 .then(([rows]: any) => {
-                   
+
                     if (rows.length) {
                         return this.db.execute(`UPDATE ${tableName} SET is_deleted = 1 WHERE ${tableName}_id = ?`, [id]);
                     } else {
-                        
+
                         return this.db.execute(`DELETE FROM ${tableName} WHERE ${tableName}_id = ?`, [id]);
                     }
                 })
