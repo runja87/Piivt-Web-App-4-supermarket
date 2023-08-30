@@ -11,6 +11,7 @@ class AdministratorRouter implements IRouter{
         application.get("/api/administrator", administratorControler.getAll.bind(administratorControler));
         application.get("/api/administrator/:id", administratorControler.getById.bind(administratorControler));
         application.post("/api/administrator", administratorControler.add.bind(administratorControler));
+        application.put("/api/administrator/:aid", administratorControler.editById.bind(administratorControler));
     }
 
 }

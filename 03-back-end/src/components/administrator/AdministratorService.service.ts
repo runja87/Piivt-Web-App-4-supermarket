@@ -2,6 +2,7 @@ import BaseService from "../../common/BaseService";
 import IAdapterOptions from '../../common/IAdapterOptions.interface';
 import { AdministratorModel } from "./AdministratorModel.model";
 import IAddAdministrator from './dto/IAddAdministrator.dto';
+import IEditAdministrator from './dto/IEditAdministrator.dto';
 
 export class IAdministratorAdapterOptions implements IAdapterOptions { 
         removePassword: boolean;
@@ -37,6 +38,9 @@ export default class AdministratorService extends BaseService <AdministratorMode
                 return this.baseAdd(data, options);
         }
 
+        public async edit(id: number, data: IEditAdministrator, options: IAdministratorAdapterOptions): Promise<AdministratorModel>{
+                return this.baseEditById(id,data, options);
+        }
 
 
 

@@ -3,26 +3,28 @@ import IServiceData from "../../../common/IServiceData.interface";
 const ajv = new Ajv();
 
 
-export interface IAddAdministratorDto  {
+export interface IEditAdministratorDto  {
     username: string;
     email: string;
     password: string;
+    isActive?: boolean;
 
 }
-export default interface IAddAdministrator extends IServiceData {
+export default interface IEditAdministrator extends IServiceData {
     username: string;
     email: string;
     password_hash: string;
+    is_active?: number;
 
 }
 
 
-const AddAdministratorValidator = ajv.compile({
+const EditAdministratorValidator = ajv.compile({
     type: "object",
     properties: {
         username: {
             type: "string",
-            pattern: "^[a-z]{4,32}$" // small letters from 4-32 characters
+            pattern: "^[a-z]{4,32}$" 
         },
 
         email: {
@@ -34,7 +36,9 @@ const AddAdministratorValidator = ajv.compile({
             type: "string",
             pattern: "^(?=.*[A-Z])(?=.*[0-9])(?=.*[\\s])(?=.*[!@#$%^&*()_+\\-=[\\]{};':\".,<>/~`]).*$" // min 8 char, at least one capital, number, special character, space and any other char or special letters
         },
-
+        isActive: {
+            type: "boolean",
+        }
     },
     required: [
         "username",
@@ -45,4 +49,4 @@ const AddAdministratorValidator = ajv.compile({
 });
 
 
-export { AddAdministratorValidator };
+export { EditAdministratorValidator };

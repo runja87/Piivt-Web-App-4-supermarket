@@ -96,6 +96,13 @@ var AdministratorService = /** @class */ (function (_super) {
             });
         });
     };
+    AdministratorService.prototype.edit = function (id, data, options) {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.baseEditById(id, data, options)];
+            });
+        });
+    };
     return AdministratorService;
 }(BaseService_1["default"]));
 exports["default"] = AdministratorService;

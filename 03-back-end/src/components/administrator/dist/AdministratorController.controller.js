@@ -13,9 +13,13 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
+var express = require("express");
 var BaseController_1 = require("../../common/BaseController");
 var bcrypt = require("bcrypt");
 var IAddAdministrator_dto_1 = require("./dto/IAddAdministrator.dto");
+var IEditAdministrator_dto_1 = require("./dto/IEditAdministrator.dto");
+var app = express();
+app.use(express.json());
 var AdministratorController = /** @class */ (function (_super) {
     __extends(AdministratorController, _super);
     function AdministratorController() {
@@ -43,12 +47,31 @@ var AdministratorController = /** @class */ (function (_super) {
         });
     };
     AdministratorController.prototype.add = function (req, res) {
-        var body = req.body;
-        if (!IAddAdministrator_dto_1.AddAdministratorValidator(body)) {
+        var data = req.body;
+        if (!IAddAdministrator_dto_1.AddAdministratorValidator(data)) {
             return res.status(400).send(IAddAdministrator_dto_1.AddAdministratorValidator.errors);
         }
-        var passwordHash = bcrypt.hashSync(body.password_hash, 10);
-        this.services.administrator.add({ username: body.username, email: body.email, password_hash: passwordHash }, { removePassword: false })
+        var passwordHash = bcrypt.hashSync(data.password_hash, 10);
+        this.services.administrator.add({ username: data.username, email: data.email, password_hash: passwordHash }, { removePassword: false })
+            .then(function (result) {
+            res.send(result);
+        })["catch"](function (error) {
+            res.status(500).send(error === null || error === void 0 ? void 0 : error.message);
+        });
+    };
+    AdministratorController.prototype.editById = function (req, res) {
+        var _a;
+        var id = +((_a = req.params) === null || _a === void 0 ? void 0 : _a.aid);
+        var body = req.body;
+        if (!IEditAdministrator_dto_1.EditAdministratorValidator(body)) {
+            return res.status(400).send(IEditAdministrator_dto_1.EditAdministratorValidator.errors);
+        }
+        var passwordHash = bcrypt.hashSync(body.password, 10);
+        var serviceData = { username: body.username, email: body.email, is_active: +body.isActive, password_hash: passwordHash };
+        if (body.isActive !== undefined) {
+            serviceData.is_active = body.isActive ? 1 : 0;
+        }
+        this.services.administrator.edit(id, serviceData, { removePassword: true })
             .then(function (result) {
             res.send(result);
         })["catch"](function (error) {
