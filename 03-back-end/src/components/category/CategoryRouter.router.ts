@@ -13,8 +13,12 @@ class CategoryRouter implements IRouter{
         application.post("/api/category", categoryController.add.bind(categoryController));
         application.put("/api/category/:cid", categoryController.edit.bind(categoryController));
         application.post("/api/category/:cid/news", categoryController.addNews.bind(categoryController));
-        application.put("/api/category/:cid/news/:iid", categoryController.editNews.bind(categoryController));
-        application.delete("/api/category/:cid/news/:iid", categoryController.deleteNews.bind(categoryController));
+        application.post("/api/category/:cid/product", categoryController.addProduct.bind(categoryController));
+        application.put("/api/category/:cid/news/:nid", categoryController.editNews.bind(categoryController));
+        application.put("/api/category/:cid/product/:pid", categoryController.editProduct.bind(categoryController));
+        application.delete("/api/category/:cid/news/:nid", categoryController.deleteNews.bind(categoryController));
+        application.delete("/api/category/:cid/product/:pid", categoryController.deleteProduct.bind(categoryController));
+           
         
     }
 
