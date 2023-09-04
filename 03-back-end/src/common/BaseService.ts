@@ -1,15 +1,21 @@
 import * as mysql2 from 'mysql2/promise';
 import IModel from './IModel.interface';
 import IServiceData from './IServiceData.interface';
-import IAdapterOptions from '../../dist/common/IAdapterOptions.interface';
+import IAdapterOptions from './IAdapterOptions.interface';
+import IApplicationResources, { IServices } from './IApplicationResources.interface';
+
 
 export default abstract class BaseService<ReturnModel extends IModel, AdapterOptions extends IAdapterOptions>{
     private database: mysql2.Connection;
-    constructor(databaseConnection: mysql2.Connection) {
-        this.database = databaseConnection;
+    private serviceInstances: IServices;
+
+    constructor(resources: IApplicationResources) {
+        this.database = resources.databaseConnection;
+        this.serviceInstances = resources.services;
     }
-
-
+    protected get services(): IServices {
+        return this.serviceInstances;
+    }
     protected get db(): mysql2.Connection {
         return this.database;
     }
@@ -83,38 +89,25 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
     }
 
 
-    protected async getAllByFieldNameAndValue(fieldName: string, value: any, options: AdapterOptions): Promise<ReturnModel[] | null> {
+    protected async getAllByFieldNameAndValue(fieldName: string, value: any, options: AdapterOptions): Promise<ReturnModel[]> {
         const tableName = this.tableName();
-        return new Promise<ReturnModel[]>(
-            (resolve, reject) => {
-                const sql: string = `SELECT * FROM \`${tableName}\` WHERE ${fieldName}\ = ?;`;
-                this.db.execute(sql, [value])
-                    .then(async ([rows]) => {
-                        if (!Array.isArray(rows) || rows.length === 0) {
-                            return resolve([]);
-                        }
-                        const items: ReturnModel[] = [];
+        const sql: string = `SELECT * FROM \`${tableName}\` WHERE ${fieldName} = ? AND (is_deleted IS NULL OR is_deleted = 0);`;
 
-                        for (const row of rows as mysql2.RowDataPacket[]) {
+        try {
+            const [rows]: any = await this.db.execute(sql, [value]);
+            const items: ReturnModel[] = [];
 
-                            if (!('is_deleted' in row) || !row.is_deleted) {
-                                items.push(await this.adaptToModel(row, options));
-                            }
-
-                        }
-                        resolve(items);
-                    })
-                    .catch(error => {
-                        reject(error);
-                    });
-
+            if (Array.isArray(rows)) {
+                for (const row of rows as mysql2.RowDataPacket[]) {
+                    items.push(await this.adaptToModel(row, options));
+                }
             }
 
-
-        );
-
+            return items;
+        } catch (error) {
+            throw new Error(`Error fetching data: ${error.message}`);
+        }
     }
-
     protected async baseAdd(data: IServiceData, options: AdapterOptions): Promise<ReturnModel> {
         const tableName = this.tableName();
 
@@ -139,6 +132,7 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                 .catch(error => {
                     reject(error);
                 });
+
 
         });
     }
@@ -199,6 +193,8 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                 .catch(error => {
                     reject(error);
                 });
+
         });
+
     }
 }

@@ -10,6 +10,7 @@ import AplicationRouters from "./routers";
 import CategoryService from "./components/category/CategoryService.service";
 import NewsService from "./components/news/NewsService.service";
 import AdministratorService from "./components/administrator/AdministratorService.service";
+import ProductService from "./components/product/ProductService.service";
 
 const application: express.Application = express();
 const config: IConfig = DevConfig;
@@ -40,13 +41,18 @@ async function main() {
     const applicationResources: IApplicationResources = {
         databaseConnection: db,
         services: {
-            category: new CategoryService(db),
-            news: new NewsService(db),
-            administrator: new AdministratorService(db),
+            category: null,
+            news: null,
+            product: null,
+            administrator: null,
+
         }
-
     };
-
+        applicationResources.services.category = new CategoryService(applicationResources);
+        applicationResources.services.news = new NewsService(applicationResources);
+        applicationResources.services.administrator = new AdministratorService(applicationResources);
+        applicationResources.services.product = new ProductService(applicationResources);
+       
 
     application.use(cors());
     application.use(express.json());
