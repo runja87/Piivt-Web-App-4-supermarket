@@ -1,5 +1,7 @@
 # Veb Aplikacija za supermarket
 
+## Cilj razvoja
+
 Ovo je projekat za ispit iz predmeta Praktikum - Internet i veb tehnologije.
 
 Ime i prezime: Nenad Miražić
@@ -30,7 +32,7 @@ Realizovati veb sajt supermarketa koji ima ulogu veb prezentacije sa više kateg
 
 - Model relacione baze podataka
 
-![piiv_appDbModel](../02-resources/piiv_appDBmodel.png)
+![piiv_appDBModel](../02-resources/piiv_appDBModel.png)
 
 - Diagram relacione baze podataka
 
@@ -41,8 +43,8 @@ Realizovati veb sajt supermarketa koji ima ulogu veb prezentacije sa više kateg
  administrator                                                                  Administrator
 
 • administrator_id          INT        10      PK   NN     UN   AI              primarni ključ
-• username                  VARCHAR    32              UQ                       korisničko ime
-• email                     VARCHAR    32              UQ                       adresa el. pošte
+• username                  VARCHAR    64              UQ                       korisničko ime
+• email                     VARCHAR    64              UQ                       adresa el. pošte
 • password_hash             VARCHAR   128                                       heš lozinke
 • password_reset_link       TEXT                       UQ      D NULL           link za resetovanje pass
 • is_active                 TINYINT      1                 UN  D 1              status naloga
@@ -51,7 +53,7 @@ Realizovati veb sajt supermarketa koji ima ulogu veb prezentacije sa više kateg
 page                                                                            Stranica
 
 • page_id                   INT         10     PK   NN     UN   AI              primarni ključ
-• title                     VARCHAR     32             UQ                       naslov
+• title                     VARCHAR     64             UQ                       naslov
 • alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • content                   TEXT                                                sadržaj
 • is_deleted                TINYINT      1          NN     UN  D 0              oznаčen kao izbrisan(0=ne)
@@ -61,7 +63,7 @@ page                                                                            
 category                                                                        Kategorija
 
 • category_id               INT         10     PK   NN     UN   AI              primarni ključ
-• name                      VARCHAR     32             UQ1                      naziv
+• name                      VARCHAR     64             UQ1                      naziv
 • category_type             ENUM     {product, news, root}     D NULL           tip kategorije (za proizvod ili vesti)
 • is_deleted                TINYINT      1          NN     UN  D 0              oznаčen kao izbrisan(0=ne)
 • category__id              INT         10             UQ1 UN  D NULL  FK       strain ključ ka istoj tabeli (adjacency list)
@@ -69,25 +71,25 @@ category                                                                        
 photo                                                                           Slika
 
 • photo_id                  INT         10     PK   NN     UN   AI              primarni ključ
-• name                      VARCHAR     32             UQ                       naziv
+• name                      VARCHAR     64             UQ                       naziv
 • alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • file_path                 TEXT                       UQ                       putanja datoteke
 • content_type              ENUM {product,news,page}           D NULL           namena slike (proizvod,vesti,stranica)
-• product_id                INT         10                 UN          FK       strain ključ ka tabeli proizvod
-• page_id                   INT         10                 UN          FK       strain ključ ka tabeli stranica
-• news_id                   INT         10                 UN          FK       strain ključ ka tabeli vesti
+• product_id                INT         10                 UN    NULL  FK       strain ključ ka tabeli proizvod
+• page_id                   INT         10                 UN    NULL  FK       strain ključ ka tabeli stranica
+• news_id                   INT         10                 UN    NULL  FK       strain ključ ka tabeli vesti
 
 product                                                                         Proizvod
 
 • product_id                INT         10     PK   NN     UN   AI              primarni ključ
-• name                      VARCHAR     32             UQ1                      naziv  
-• alt_text                  VARCHAR     64                      D NULL          dodatni opis, seo tagovi
+• name                      VARCHAR     64             UQ1                      naziv  
+• alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • description               TEXT                    NN                          opis
 • price                     DECIMAL     10,2        NN     UN                   cena
 • sku                       INT         10          NN UQ  UN                   jedinstveni broj
 • supply                    INT         10          NN     UN                   stanje u magacinu
 • is_on_discount            TINYINT     0           NN     UN   D 0             status popusta(aktivan/neaktivan)
-• discount                  ENU  {[0.10-0.9}}       NN                          vrednost popusta u %
+• discount                  ENU  {[0.10-0.9}}       NN           NULL           vrednost popusta u %
 • is_deleted                TINYINT      1          NN     UN   D 0             oznаčen kao izbrisan(da/ne)
 • created_at                TIMESTAMP    1                      D CT            vreme kreiranja
 • modified_at               TIMESTAMP    1                      D CT            vreme ažuriranja
@@ -95,28 +97,28 @@ product                                                                         
 
 news                                                                            Vesti
 
-• news_id                  INT         10     PK   NN     UN   AI               primarni ključ
-• title                    VARCHAR     32             UQ1                       naslov
+• news_id                  INT         10     PK   NN      UN   AI              primarni ključ
+• title                    VARCHAR     64              UQ1                       naslov
 • content                  TEXT                                                 sadržaj/tekst
 • alt_text                 VARCHAR     128                     D NULL           dodatni opis, seo tagovi
 • created_at               TIMESTAMP                           D CT             vreme kreiranja
-• is_deleted               TINYINT       1         NN     UN   D 0              oznаčen kao izbrisan(da/ne)
+• is_deleted               TINYINT       1         NN      UN  D 0              oznаčen kao izbrisan(da/ne)
 • modified_at              TIMESTAMP                           D CT             vreme ažuriranja
-• category_id              INT         10             UQ1 UN          FK        straini ključ ka tabeli kategorija
+• category_id              INT          10             UQ1 UN          FK       straini ključ ka tabeli kategorija
 
 contact                                                                         kontakt
 
-• contact_id                INT         10     PK   NN     UN   AI              primarni ključ
-• firstname                 VARCHAR     32                                      ime
-• lastname                  VARCHAR     32                                      prezime
+• contact_id                INT         10    PK   NN      UN   AI              primarni ključ
+• firstname                 VARCHAR     64                                      ime
+• lastname                  VARCHAR     64                                      prezime
 • email                     VARCHAR     64                                      adresa el. pošte
-• title                     VARCHAR     32                                      naslov
+• title                     VARCHAR     64                                      naslov
 • message                   TEXT                                                poruka/pitanje
-• created_at                TIMESTAMP                           D CT            vreme kreiranja
+• created_at                TIMESTAMP                          D CT             vreme kreiranja
 
 ## Dijagram organizacije komponenata aplikacije
 
-....
+![dijagramOrganizacijeKomponenataApp](../02-resources/dijagramOrganizacijeKomponenataApp.png)
 
 ### Uloge korisnika
 
@@ -164,7 +166,7 @@ contact                                                                         
   - Brisanje slike iz galerije     (briše slike iz galerije ukoliko već ne pripada određenom proizvodu/vesti)
   - Pregled kontakt poruka         (izlistava sve kontakt poruke)
   - Brisanje kontakt poruka        (briše odabranu kontakt poruku)
-- Izmena administratorskog naloga  (može da menja korisničko ime, email i password samo na svom nalogu)
+- Izmena administratorskog naloga  (može da menja korisničko ime, email, password i deaktivaciju, samo na svom nalogu)
 
 - Korisnik/posetilac sajta
 
