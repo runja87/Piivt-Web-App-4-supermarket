@@ -5,6 +5,7 @@ import IAdapterOptions from './IAdapterOptions.interface';
 import IApplicationResources, { IServices } from './IApplicationResources.interface';
 
 
+
 export default abstract class BaseService<ReturnModel extends IModel, AdapterOptions extends IAdapterOptions>{
     private database: mysql2.Connection;
     private serviceInstances: IServices;
@@ -70,12 +71,7 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                         }
                         const row = rows[0] as mysql2.RowDataPacket;
 
-                        if ('is_deleted' in row) {
-                            if (1 === +row.is_deleted) {
-                                return resolve(null);
-                            }
-                        }
-
+                    
                         resolve(await this.adaptToModel(row, options));
                     })
                     .catch(error => {
@@ -88,7 +84,31 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
 
     }
 
+    protected async getAllFromTableByFieldNameAndValue<OwnReturnType>(tableName: string, fieldName: string, value: any): Promise<OwnReturnType[]> {
+        return new Promise(
+            (resolve, reject) => {
+                const sql =  `SELECT * FROM \`${ tableName }\` WHERE \`${ fieldName }\` = ? AND (is_deleted IS NULL OR is_deleted = 0);`;
 
+                this.db.execute(sql, [ value ])
+                .then( async ( [ rows ] ) => {
+                    if (rows === undefined) {
+                        return resolve([]);
+                    }
+                    const items: OwnReturnType[] = [];
+
+                    for (const row of rows as mysql2.RowDataPacket[]) {
+                        items.push(row as OwnReturnType);
+                    }
+
+                    resolve(items);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+            }
+        );
+    }
+    
     protected async getAllByFieldNameAndValue(fieldName: string, value: any, options: AdapterOptions): Promise<ReturnModel[]> {
         const tableName = this.tableName();
         const sql: string = `SELECT * FROM \`${tableName}\` WHERE ${fieldName} = ? AND (is_deleted IS NULL OR is_deleted = 0);`;
@@ -197,4 +217,9 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
         });
 
     }
+
+
+   
 }
+
+
