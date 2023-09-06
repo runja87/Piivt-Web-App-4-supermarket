@@ -1,8 +1,9 @@
 import NewsModel from '../news/NewsModel.model';
 import IModel from '../../common/IModel.interface';
+import ProductModel from '../product/ProductModel.model';
 enum CategoryType {
   RootCategories = "root",
-  Products = "products",
+  Products = "product",
   News = "news"
 }
 class CategoryModel implements IModel {
@@ -10,14 +11,12 @@ class CategoryModel implements IModel {
     name: string;
     categoryType: CategoryType;
     isDeleted: boolean;
-  //  imagePath: string;
     parentCategoryId: number;
     
-    parentCategoryes: CategoryModel[] = [];
-    //subcategories: CategoryModel[] = [];
-
-    news?: NewsModel[];
-    //product?: ProductMOdel[];
+    children?: CategoryModel[] = [];
+    news?: NewsModel[] = [];
+    products?: ProductModel[] = [];
+  
 }
 
 export default CategoryModel;

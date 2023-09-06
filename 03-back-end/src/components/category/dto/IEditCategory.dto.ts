@@ -3,21 +3,22 @@ import IServiceData from "../../../common/IServiceData.interface";
 const ajv = new Ajv();
 
 enum CategoryType {
-    RootCategories = "root",
     Products = "products",
     News = "news"
 }
 export interface IEditCategoryDto {
     name: string;
     categoryType: CategoryType;
-    parentCategoryId: number;
-
+    parentCategoryId: string; // samo za testiranje api ja. stiyace preko servisnog DTO-a
+    isDeleted: boolean; 
+    
 }
 
 export default interface IEditCategory extends IServiceData {
     name: string;
     category_type: CategoryType;
-    category__id: number;
+    is_deleted: boolean;
+    //parent_id: number;
 
 }
 
@@ -27,25 +28,26 @@ const EditCategoryValidator = ajv.compile({
         name: {
             type: "string",
             minLength: 4,
-            maxLength: 32,
+            maxLength: 64,
         },
 
         categoryType: {
             type: "string",
-            enum: ["product", "news", "root"],
+            enum: ["product", "news"],
         },
-        parentCategoryId: {
-            type: "number",
-            minimum: 1,
+        isDeleted: {
+ 
+            type: "boolean",
+            
+            
         }
-
+       
     },
     required: [
         "name",
         "categoryType",
-        "parentCategoryId"
     ],
-    additionalProperties: false,
+    additionalProperties: true,  // default false
 });
 
 
