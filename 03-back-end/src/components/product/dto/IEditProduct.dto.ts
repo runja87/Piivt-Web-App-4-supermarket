@@ -11,6 +11,7 @@ export interface IEditProductDto {
     price: number;
     sku: number;
     supply: number;
+    isDeleted?: boolean;
     discount?: number;
     isOnDiscount?: number | null;
 }
@@ -23,6 +24,7 @@ export default interface IEditProduct extends IServiceData {
     price: number;
     sku: number;
     supply: number;
+    is_deleted: boolean;
     discount?: number | null;
     is_on_discount?: number | 0;
     category_id: number;
@@ -69,14 +71,19 @@ const EditProductValidator = ajv.compile({
         },
         sku:
         {
-            type: "number",
-            minimum: 12,
-            maximum: 12,
+            type: 'integer',
+            minimum: 100000000000,  
+            maximum: 999999999999 
+            
         },
         supply:
         {
             type: "number",
         },
+        isDeleted:
+        {
+            type: "boolean",
+        }
 
     },
     required: [
@@ -85,6 +92,7 @@ const EditProductValidator = ajv.compile({
         "price",
         "sku",
         "supply",
+        
 
     ],
 

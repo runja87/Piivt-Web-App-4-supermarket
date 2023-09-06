@@ -1,4 +1,5 @@
 import IModel from '../../common/IModel.interface';
+import PhotoModel from '../photo/PhotoModel.model';
 
 
 enum Percentage {
@@ -28,6 +29,8 @@ class ProductModel implements IModel {
     modifiedAt: string;
     isDeleted: boolean;
     categoryId: number;
+    
+    photos?: PhotoModel[] = [];
 
 }
 

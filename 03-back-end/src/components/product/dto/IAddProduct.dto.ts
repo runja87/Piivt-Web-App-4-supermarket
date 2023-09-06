@@ -26,10 +26,6 @@ export default interface IAddProduct extends IServiceData {
 }
 
 
-
-
-
-
 const AddProductValidator = ajv.compile({
     type: "object",
     properties: {
@@ -50,11 +46,10 @@ const AddProductValidator = ajv.compile({
 
         },
         sku: {
-            type: "number",
-            minimum: 12,
-            maximum: 12,
-
-
+            type: 'integer',
+            minimum: 100000000000,  
+            maximum: 999999999999 
+           
         },
         supply: {
             type: "number",
