@@ -16,10 +16,10 @@ export default class AdministratorController extends BaseController {
     getAll(req: Request, res: Response) {
         this.services.administrator.getAll({ removePassword: true })
             .then(result => {
-                res.send(result);
+                return res.send(result);
             })
             .catch(error => {
-                res.status(500).send(error?.message);
+                return res.status(500).send(error?.message);
             })
     }
 
@@ -31,11 +31,11 @@ export default class AdministratorController extends BaseController {
                 if (result === null || !result.isActive) {
                     return res.status(404).send('Administrator not found or disabed!');
                 }
-                res.send(result);
+                return res.send(result);
 
             })
             .catch(error => {
-                res.status(500).send(error?.message);
+                return res.status(500).send(error?.message);
             })
 
 
@@ -51,10 +51,10 @@ export default class AdministratorController extends BaseController {
         const passwordHash = bcrypt.hashSync((data as any).password, 10);
         this.services.administrator.add({ username: (data as any).username, email: (data as any).email, password_hash: passwordHash }, { removePassword: false })
             .then(result => {
-                res.send(result);
+                return res.send(result);
             })
             .catch(error => {
-                res.status(500).send(error?.message);
+                return res.status(500).send(error?.message);
             })
 
     }
@@ -68,17 +68,20 @@ export default class AdministratorController extends BaseController {
 
         const passwordHash = bcrypt.hashSync(body.password, 10);
 
-        const serviceData: IEditAdministrator = { username: body.username, email: body.email, is_active: Boolean(body.isActive), password_hash: passwordHash };
+        const serviceData: IEditAdministrator = { username: body.username, email: body.email, is_active: body.isActive, password_hash: passwordHash };
         if (body.isActive !== undefined) {
             serviceData.is_active = body.isActive ? true : false;
         }
         this.services.administrator.edit(id, serviceData, { removePassword: true })
             .then(result => {
-                res.send(result);
+                return res.send(result);
             })
             .catch(error => {
-                res.status(500).send(error?.message);
-            })
+                return res.status(500).send(error?.message);
+        })
+        .catch(error => {
+            return res.status(500).send(error?.message);
+        })
 
     }
 

@@ -7,15 +7,15 @@ const ajv = new Ajv();
  export interface IEditNewsDto {
     title: string;
     content: string;
-    altText: string;
-    //parentCategoryId: string;
+    altText?: string | null;
+    
 }
 
 
 export default interface IEditNews extends IServiceData {
     title: string;
     content: string;
-    alt_text: string;
+    alt_text?: string | null;
     category_id: number; 
 }
 
@@ -25,15 +25,18 @@ const EditNewsValidator = ajv.compile({
         title: {
             type: "string",
             minLength: 4,
-            maxLength: 32
+            maxLength: 64,
         },
         content: {
             type: "string",
+            minLength: 50,
+            maxLength: 500,
         },
      
         altText: {
             type: "string",
-            maxLength: 64
+            maxLength: 128,
+            default: null,
         },
 
     },
@@ -41,7 +44,7 @@ const EditNewsValidator = ajv.compile({
         "title",
         "content",  
     ],
-    additionalProperties: true,
+    additionalProperties: false,
 });
 
 export { EditNewsValidator };

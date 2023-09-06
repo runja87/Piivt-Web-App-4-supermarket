@@ -1,4 +1,5 @@
 import IModel from '../../common/IModel.interface';
+import PhotoModel from '../photo/PhotoModel.model';
 
 class NewsModel implements IModel{
     newsId: number;
@@ -9,6 +10,8 @@ class NewsModel implements IModel{
     createdAt: string;
     modifiedAt: string;
     categoryId: number;
+
+    photos?: PhotoModel[] = [];
 }
 
 export default NewsModel;

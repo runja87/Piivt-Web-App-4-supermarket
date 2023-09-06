@@ -13,7 +13,7 @@ export interface IEditProductDto {
     supply: number;
     isDeleted?: boolean;
     discount?: number;
-    isOnDiscount?: number | null;
+    isOnDiscount?: boolean| false;
 }
 
 
@@ -24,9 +24,9 @@ export default interface IEditProduct extends IServiceData {
     price: number;
     sku: number;
     supply: number;
-    is_deleted: boolean;
+    is_deleted: boolean | false;
     discount?: number | null;
-    is_on_discount?: number | 0;
+    is_on_discount?: boolean | false;
     category_id: number;
 
 }

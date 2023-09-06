@@ -43,12 +43,12 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                                 items.push(await this.adaptToModel(row, options));
                             }
                         }
-                        resolve(items);
+                       return resolve(items);
 
 
                     })
                     .catch(error => {
-                        reject(error);
+                        return reject(error);
                     });
 
             }
@@ -70,12 +70,10 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                             return resolve(null);
                         }
                         const row = rows[0] as mysql2.RowDataPacket;
-
-                    
-                        resolve(await this.adaptToModel(row, options));
+                        return resolve(await this.adaptToModel(row, options));
                     })
                     .catch(error => {
-                        reject(error);
+                        return reject(error);
                     });
 
             }
@@ -85,10 +83,8 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
     }
 
     protected async getAllFromTableByFieldNameAndValue<OwnReturnType>(tableName: string, fieldName: string, value: any): Promise<OwnReturnType[]> {
-        return new Promise(
-            (resolve, reject) => {
+        return new Promise((resolve, reject) => {
                 const sql =  `SELECT * FROM \`${ tableName }\` WHERE \`${ fieldName }\` = ? AND (is_deleted IS NULL OR is_deleted = 0);`;
-
                 this.db.execute(sql, [ value ])
                 .then( async ( [ rows ] ) => {
                     if (rows === undefined) {
@@ -100,10 +96,10 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                         items.push(row as OwnReturnType);
                     }
 
-                    resolve(items);
+                    return resolve(items);
                 })
                 .catch(error => {
-                    reject(error);
+                    return reject(error);
                 });
             }
         );
@@ -147,10 +143,10 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                     if (newItem === null) {
                         return reject({ message: 'Could not add a new item into the ' + tableName + 'table!', });
                     }
-                    resolve(newItem);
+                    return resolve(newItem);
                 })
                 .catch(error => {
-                    reject(error);
+                    return reject(error);
                 });
 
 
@@ -162,7 +158,7 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
         return new Promise((resolve, reject) => {
             const properties = Object.getOwnPropertyNames(data);
             if (properties.length === 0) {
-                return reject({ message: 'There is nothing to change!' })
+                return reject({ message: 'There is nothing to edit!' })
             }
             const sqlPairs = properties.map(property => "`" + property + "` = ?").join(", ");
             const values = properties.map(property => data[property]);
@@ -173,16 +169,16 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                 .then(async result => {
                     const info: any = result;
                     if (info[0]?.affectedRows === 0) {
-                        return reject({ message: 'Could not change any items in the ' + tableName + 'table!', })
+                        return reject({ message: 'Could not edit any items in the ' + tableName + ' table!', })
                     }
                     const item: ReturnModel | null = await this.getById(id, options);
                     if (item === null) {
-                        return reject({ message: 'Could not find this item in the ' + tableName + 'table!', });
+                        return reject({ message: 'Could not find this item in the ' + tableName + ' table!', });
                     }
-                    resolve(item);
+                    return resolve(item);
                 })
                 .catch(error => {
-                    reject(error);
+                    return reject(error);
                 });
 
         });
@@ -205,13 +201,13 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                 })
                 .then(([result]: any) => {
                     if (result.affectedRows === 1) {
-                        resolve(true);
+                        return resolve(true);
                     } else {
-                        resolve(false);
+                        return resolve(false);
                     }
                 })
                 .catch(error => {
-                    reject(error);
+                    return reject(error);
                 });
 
         });

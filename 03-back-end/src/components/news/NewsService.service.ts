@@ -11,7 +11,6 @@ import IEditNews from "./dto/IEditNews.dto";
 class NewsAdapterOptions implements IAdapterOptions { }
 
 class NewsService extends BaseService<NewsModel, NewsAdapterOptions> {
-    static getAllByCategoryId: NewsModel[] | PromiseLike<NewsModel[]>;
     tableName(): string {
         return "news";
     }
@@ -37,8 +36,8 @@ class NewsService extends BaseService<NewsModel, NewsAdapterOptions> {
         return this.baseAdd(data, {});
     }
 
-    public async editById(ingredientId: number, data: IEditNews): Promise<NewsModel> {
-        return this.baseEditById(ingredientId, data, {});
+    public async editById(newsId: number, data: IEditNews): Promise<NewsModel> {
+        return this.baseEditById(newsId, data, {});
     }
 
     public async deleteById(newsId: number): Promise<boolean> {

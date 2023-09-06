@@ -55,15 +55,12 @@ class CategoryService extends BaseService<CategoryModel, ICategoryAdapterOptions
 
 async getThreeLevelDepth(options: ICategoryAdapterOptions) {
     const allCategories = await this.getAll(options);
-  
-    
     const rootCategory = allCategories.find(cat => cat.name === 'root');
   
     if (!rootCategory) {
       throw new Error("Root category not found!");
     }
   
-
     const hierarchy = await this.buildHierarchy(allCategories, rootCategory.categoryId, 3);
   
     return hierarchy;

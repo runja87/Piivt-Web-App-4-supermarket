@@ -45,7 +45,7 @@ Realizovati veb sajt supermarketa koji ima ulogu veb prezentacije sa više kateg
 • email                     VARCHAR    32              UQ                       adresa el. pošte
 • password_hash             VARCHAR   128                                       heš lozinke
 • password_reset_link       TEXT                       UQ      D NULL           link za resetovanje pass
-• is_active                 TINYINT      1                 UN  D 1              status naloga
+• is_active                 TINYINT      1                 UN  D 1              status naloga| 1 = active
 • created_at                TIMESTAMP                          D CT             vreme kreiranja naloga
 
 page                                                                            Stranica
@@ -64,7 +64,7 @@ category                                                                        
 • name                      VARCHAR     32             UQ1                      naziv
 • category_type             ENUM     {product, news, root}     D NULL           tip kategorije (za proizvod ili vesti)
 • is_deleted                TINYINT      1          NN     UN  D 0              oznаčen kao izbrisan(0=ne)
-• category__id              INT         10             UQ1 UN  D NULL  FK       strain ključ ka istoj tabeli (adjacency list)
+• parent_id                 INT         10             UQ1 UN  D NULL  FK       FK upućuje na PK u istoj tabel(adjacency list)
 
 photo                                                                           Slika
 
@@ -72,7 +72,6 @@ photo                                                                           
 • name                      VARCHAR     32             UQ                       naziv
 • alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • file_path                 TEXT                       UQ                       putanja datoteke
-• content_type              ENUM {product,news,page}           D NULL           namena slike (proizvod,vesti,stranica)
 • product_id                INT         10                 UN          FK       strain ključ ka tabeli proizvod
 • page_id                   INT         10                 UN          FK       strain ključ ka tabeli stranica
 • news_id                   INT         10                 UN          FK       strain ključ ka tabeli vesti
@@ -84,10 +83,10 @@ product                                                                         
 • alt_text                  VARCHAR     64                      D NULL          dodatni opis, seo tagovi
 • description               TEXT                    NN                          opis
 • price                     DECIMAL     10,2        NN     UN                   cena
-• sku                       INT         10          NN UQ  UN                   jedinstveni broj
+• sku                       BIGINT      12          NN UQ  UN                   jedinstveni broj proizvoda
 • supply                    INT         10          NN     UN                   stanje u magacinu
 • is_on_discount            TINYINT     0           NN     UN   D 0             status popusta(aktivan/neaktivan)
-• discount                  ENU  {[0.10-0.9}}       NN                          vrednost popusta u %
+• discount                  ENU  {[0.10-0.9}}                                   vrednost popusta u %
 • is_deleted                TINYINT      1          NN     UN   D 0             oznаčen kao izbrisan(da/ne)
 • created_at                TIMESTAMP    1                      D CT            vreme kreiranja
 • modified_at               TIMESTAMP    1                      D CT            vreme ažuriranja

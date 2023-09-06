@@ -13,19 +13,22 @@ class ProductController extends BaseController {
             if (result === null) {
                 return res.status(404).send("Category not found!");
             }
+            if(result.categoryType !== 'product'){
+              return res.status(400).send("Wrong category!");
+            }
 
             this.services.product.getAllByCategoryId(categoryId, {
                 loadNews: false, loadProducts: true 
             })
             .then(result => {
-                res.send(result);
+              return res.send(result);
             })
             .catch(error => {
-                res.status(500).send(error?.message);
+              return res.status(500).send(error?.message);
             });
         })
         .catch(error => {
-            res.status(500).send(error?.message);
+          return res.status(500).send(error?.message);
         });
     }
 
@@ -39,7 +42,10 @@ class ProductController extends BaseController {
         this.services.category.getById(categoryId, DefaultCategoryAdapterOptions)
           .then(result => {
             if (result === null) {
-              return res.status(404).send('Category not found!');
+              return res.status(404).send('Category not found or product deleted!');
+            }
+            if (result.categoryType !== 'product') {
+              return res.status(400).send('Wrong category!');
             }
     
             this.services.product.getById(productId, {loadNews: false, loadProducts: true})
@@ -53,7 +59,7 @@ class ProductController extends BaseController {
               });
             })
             .catch(error =>{
-              res.status(500).send(error?.message);
+              return res.status(500).send(error?.message);
             });
           }
 
@@ -84,9 +90,9 @@ class ProductController extends BaseController {
             category_id: categoryId
           };
           const addedProduct = await this.services.product.add(productData);
-          res.send(addedProduct);
+          return res.send(addedProduct);
         } catch (error) {
-          res.status(500).send(error?.message);
+          return res.status(500).send(error?.message);
         }
     
       }
@@ -132,16 +138,16 @@ class ProductController extends BaseController {
     
                 this.services.product.editById(productId, productData)
                   .then(result => {
-                    res.send(result);
+                    return res.send(result);
                   })
                   .catch(error => {
     
-                    res.status(500).send(error?.message);
+                    return res.status(500).send(error?.message);
                   });
               })
     
               .catch(error => {
-                res.status(500).send(error?.message);
+                return res.status(500).send(error?.message);
               });
           })
     
@@ -163,18 +169,16 @@ class ProductController extends BaseController {
             }
             this.services.product.deleteById(productId)
               .then(result => {
-                res.send('This product has been deleted!');
+                return res.send('This product has been deleted!');
               })
               .catch(error => {
-                res.status(500).send(error?.message);
+                return res.status(500).send(error?.message);
               })
     
           })
+    
           .catch(error => {
-            res.status(500).send(error?.message);
-          })
-          .catch(error => {
-            res.status(500).send(error?.message);
+            return res.status(500).send(error?.message);
           });
       }
     
