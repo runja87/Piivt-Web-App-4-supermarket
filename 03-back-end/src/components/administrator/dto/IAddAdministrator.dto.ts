@@ -22,7 +22,7 @@ const AddAdministratorValidator = ajv.compile({
     properties: {
         username: {
             type: "string",
-            pattern: "^[a-z]{4,32}$" // small letters from 4-32 characters
+            pattern: "^[a-z0-9]{4,64}$" // small letters and numbers from 4-64 characters
         },
 
         email: {
