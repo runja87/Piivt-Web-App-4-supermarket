@@ -66,7 +66,7 @@ category                                                                        
 • name                      VARCHAR     64             UQ1                      naziv
 • category_type             ENUM     {product, news, root}     D NULL           tip kategorije (za proizvod ili vesti)
 • is_deleted                TINYINT      1          NN     UN  D 0              oznаčen kao izbrisan(0=ne)
-• category__id              INT         10             UQ1 UN  D NULL  FK       strain ključ ka istoj tabeli (adjacency list)
+• parent_id                 INT         10             UQ1 UN  D NULL  FK       strain ključ ka istoj tabeli (adjacency list)
 
 photo                                                                           Slika
 
@@ -74,7 +74,6 @@ photo                                                                           
 • name                      VARCHAR     64             UQ                       naziv
 • alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • file_path                 TEXT                       UQ                       putanja datoteke
-• content_type              ENUM {product,news,page}           D NULL           namena slike (proizvod,vesti,stranica)
 • product_id                INT         10                 UN    NULL  FK       strain ključ ka tabeli proizvod
 • page_id                   INT         10                 UN    NULL  FK       strain ključ ka tabeli stranica
 • news_id                   INT         10                 UN    NULL  FK       strain ključ ka tabeli vesti
@@ -86,7 +85,7 @@ product                                                                         
 • alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • description               TEXT                    NN                          opis
 • price                     DECIMAL     10,2        NN     UN                   cena
-• sku                       INT         10          NN UQ  UN                   jedinstveni broj
+• sku                       BIGINT         10          NN UQ  UN                   jedinstveni broj
 • supply                    INT         10          NN     UN                   stanje u magacinu
 • is_on_discount            TINYINT     0           NN     UN   D 0             status popusta(aktivan/neaktivan)
 • discount                  ENU  {[0.10-0.9}}       NN           NULL           vrednost popusta u %

@@ -73,7 +73,7 @@ async function main() {
     application.use(fileUpload({
         limits: {
             files: 5,
-            fileSize: 1024 * 1023 * 5,
+            fileSize: 1024 * 1024 * 5,
         },
         abortOnLimit: true,
         useTempFiles: true,

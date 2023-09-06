@@ -32,7 +32,7 @@ const AddAdministratorValidator = ajv.compile({
         },
         password: {
             type: "string",
-            pattern: "^(?=.*[A-Z])(?=.*[0-9])(?=.*[\\s])(?=.*[!@#$%^&*()_+\\-=[\\]{};':\".,<>/~`]).*$" // min 8 char, at least one capital, number, special character, space and any other char or special letters
+            pattern: "^(?=.*[A-Z])(?=.*[0-9])(?=.*[\\s])(?=.*[!@#$%^&*()_+\\-=[\\]{};':\".,<>/~`]).*$" // min 8 characters, at least one capital, number, special character, space and any other char or special letters
         },
 
     },
