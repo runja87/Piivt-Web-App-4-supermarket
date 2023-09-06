@@ -3,6 +3,7 @@ import * as cors from "cors";
 import IConfig from "./common/IConfig.interface";
 import DevConfig from "./configs";
 import * as fs from "fs";
+import fileUpload = require("express-fileupload");
 import * as morgan from "morgan";
 import IApplicationResources from "./common/IApplicationResources.interface";
 import * as mysql2 from 'mysql2/promise';
@@ -10,6 +11,11 @@ import AplicationRouters from "./routers";
 import CategoryService from "./components/category/CategoryService.service";
 import NewsService from "./components/news/NewsService.service";
 import AdministratorService from "./components/administrator/AdministratorService.service";
+import ProductService from "./components/product/ProductService.service";
+import PhotoService from "./components/photo/PhotoService.service";
+import PageService from "./components/page/PageService.service";
+import ContactService from "./components/contact/ContactService.service";
+
 
 const application: express.Application = express();
 const config: IConfig = DevConfig;
@@ -40,16 +46,46 @@ async function main() {
     const applicationResources: IApplicationResources = {
         databaseConnection: db,
         services: {
-            category: new CategoryService(db),
-            news: new NewsService(db),
-            administrator: new AdministratorService(db),
+            category: null,
+            news: null,
+            product: null,
+            photo: null,
+            page: null,
+            contact: null,
+            administrator: null,
+
         }
-
     };
-
+        applicationResources.services.category = new CategoryService(applicationResources);
+        applicationResources.services.news = new NewsService(applicationResources);
+        applicationResources.services.administrator = new AdministratorService(applicationResources);
+        applicationResources.services.product = new ProductService(applicationResources);
+        applicationResources.services.photo = new PhotoService(applicationResources);
+        applicationResources.services.page = new PageService(applicationResources);
+        applicationResources.services.contact = new ContactService(applicationResources);
+        
+       
 
     application.use(cors());
     application.use(express.json());
+
+    application.use(express.urlencoded({extended: true})),
+    application.use(fileUpload({
+        limits: {
+            files: 5,
+            fileSize: 1024 * 1023 * 5,
+        },
+        abortOnLimit: true,
+        useTempFiles: true,
+        tempFileDir: "../temp/",
+        createParentPath: true,
+        safeFileNames: true,
+        preserveExtension: true,
+
+
+    }));
+
+
 
     application.use(config.server.static.route, express.static(config.server.static.path, {
         index: config.server.static.index,
@@ -73,3 +109,4 @@ process.on('uncaughtException', error => {
     console.error('ERROR', error);
 })
 main();
+

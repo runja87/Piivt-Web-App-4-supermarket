@@ -1,11 +1,8 @@
 import CategoryModel from "./CategoryModel.model";
 import IAdapterOptions from "../../common/IAdapterOptions.interface";
-import NewsService from '../news/NewsService.service';
 import BaseService from "../../common/BaseService";
 import IAddCategory from "./dto/IAddCategory.dto";
 import IEditCategory from "./dto/IEditCategory.dto";
-
-
 
 
 
@@ -32,16 +29,14 @@ class CategoryService extends BaseService<CategoryModel, ICategoryAdapterOptions
         category.name = data?.name;
         category.categoryType = data?.category_type;
         category.isDeleted = Boolean(data?.is_deleted);
-        category.parentCategoryId = +data?.category__id;
-
+        category.parentCategoryId = +data?.parent_id;
+        
 
         if (options.loadNews) {
-            const newsService: NewsService = new NewsService(this.db);
-           // const categoryService: CategoryService = new CategoryService(this.db);
-
-            //category.parentCategoryes = await categoryService.getAllByFieldNameAndValue('category_id', category.parentCategoryId, options);
-            category.news = await newsService.getAllByCategoryId(category.categoryId, options);
-
+            category.news = await this.services.news.getAllByCategoryId(category.categoryId, options);
+        }
+        if (options.loadProducts) {
+            category.products = await this.services.product.getAllByCategoryId(category.categoryId, options);
         }
 
         return category;
@@ -54,11 +49,45 @@ class CategoryService extends BaseService<CategoryModel, ICategoryAdapterOptions
     public async editById(categoryId: number, data: IEditCategory, options: ICategoryAdapterOptions = DefaultCategoryAdapterOptions): Promise<CategoryModel> {
         return this.baseEditById(categoryId, data, options);
     }
+    public async deleteById(categoryId: number): Promise<boolean> {
+        return this.baseDeleteById(categoryId);
+    }
+
+async getThreeLevelDepth(options: ICategoryAdapterOptions) {
+    const allCategories = await this.getAll(options);
+  
+    
+    const rootCategory = allCategories.find(cat => cat.name === 'root');
+  
+    if (!rootCategory) {
+      throw new Error("Root category not found!");
+    }
+  
+
+    const hierarchy = await this.buildHierarchy(allCategories, rootCategory.categoryId, 3);
+  
+    return hierarchy;
+  }
+  
+  private async buildHierarchy(allCategories: CategoryModel[], parentCategoryId: number, depth: number): Promise<CategoryModel[]> {
+    if (depth === 0) {
+      return [];
+    }
+  
+    const childrenOfRoot = allCategories.filter(cat => cat.parentCategoryId === parentCategoryId && cat.categoryId !== parentCategoryId);  // Exclude the parent itself
+  
+    for (let child of childrenOfRoot) {
+      child.children = await this.buildHierarchy(allCategories, child.categoryId, depth - 1);
+    }
+  
+    return childrenOfRoot;
+  }
+
+
+  
 
 
 }
-
-
 
 export default CategoryService;
 

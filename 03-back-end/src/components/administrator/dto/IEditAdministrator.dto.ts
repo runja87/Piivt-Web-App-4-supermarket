@@ -7,14 +7,14 @@ export interface IEditAdministratorDto  {
     username: string;
     email: string;
     password: string;
-    isActive?: boolean;
+    isActive: boolean;
 
 }
 export default interface IEditAdministrator extends IServiceData {
-    username: string;
-    email: string;
+    username?: string;
+    email?: string;
     password_hash: string;
-    is_active?: number;
+    is_active?: boolean;
 
 }
 
@@ -24,7 +24,7 @@ const EditAdministratorValidator = ajv.compile({
     properties: {
         username: {
             type: "string",
-            pattern: "^[a-z]{4,32}$" 
+            pattern: "^[a-z0-9]{4,64}$" 
         },
 
         email: {
@@ -41,8 +41,6 @@ const EditAdministratorValidator = ajv.compile({
         }
     },
     required: [
-        "username",
-        "email",
         "password",
     ],
     additionalProperties: false,
