@@ -66,11 +66,7 @@ category                                                                        
 • name                      VARCHAR     64             UQ1                      naziv
 • category_type             ENUM     {product, news, root}     D NULL           tip kategorije (za proizvod ili vesti)
 • is_deleted                TINYINT      1          NN     UN  D 0              oznаčen kao izbrisan(0=ne)
-<<<<<<< HEAD
 • parent_id                 INT         10             UQ1 UN  D NULL  FK       FK upućuje na PK u istoj tabel(adjacency list)
-=======
-• parent_id                 INT         10             UQ1 UN  D NULL  FK       strain ključ ka istoj tabeli (adjacency list)
->>>>>>> 69bee787dc6fd40f261a333c1d45ba988ebfd576
 
 photo                                                                           Slika
 
@@ -78,15 +74,9 @@ photo                                                                           
 • name                      VARCHAR     64             UQ                       naziv
 • alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • file_path                 TEXT                       UQ                       putanja datoteke
-<<<<<<< HEAD
 • product_id                INT         10                 UN          FK       strain ključ ka tabeli proizvod
 • page_id                   INT         10                 UN          FK       strain ključ ka tabeli stranica
 • news_id                   INT         10                 UN          FK       strain ključ ka tabeli vesti
-=======
-• product_id                INT         10                 UN    NULL  FK       strain ključ ka tabeli proizvod
-• page_id                   INT         10                 UN    NULL  FK       strain ključ ka tabeli stranica
-• news_id                   INT         10                 UN    NULL  FK       strain ključ ka tabeli vesti
->>>>>>> 69bee787dc6fd40f261a333c1d45ba988ebfd576
 
 product                                                                         Proizvod
 
@@ -95,17 +85,10 @@ product                                                                         
 • alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • description               TEXT                    NN                          opis
 • price                     DECIMAL     10,2        NN     UN                   cena
-<<<<<<< HEAD
 • sku                       BIGINT      12          NN UQ  UN                   jedinstveni broj proizvoda
 • supply                    INT         10          NN     UN                   stanje u magacinu
 • is_on_discount            TINYINT     0           NN     UN   D 0             status popusta(aktivan/neaktivan)
 • discount                  ENU  {[0.10-0.9}}                                   vrednost popusta u %
-=======
-• sku                       BIGINT         10          NN UQ  UN                   jedinstveni broj
-• supply                    INT         10          NN     UN                   stanje u magacinu
-• is_on_discount            TINYINT     0           NN     UN   D 0             status popusta(aktivan/neaktivan)
-• discount                  ENU  {[0.10-0.9}}       NN           NULL           vrednost popusta u %
->>>>>>> 69bee787dc6fd40f261a333c1d45ba988ebfd576
 • is_deleted                TINYINT      1          NN     UN   D 0             oznаčen kao izbrisan(da/ne)
 • created_at                TIMESTAMP    1                      D CT            vreme kreiranja
 • modified_at               TIMESTAMP    1                      D CT            vreme ažuriranja
