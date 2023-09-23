@@ -17,19 +17,17 @@ class PhotoService extends BaseService<PhotoModel, IPhotoAdapterOptions> {
         return "photo";
     }
 
-    protected async adaptToModel(data: any): Promise<PhotoModel> {
+    protected async adaptToModel(data: any, options: IPhotoAdapterOptions): Promise<PhotoModel> {
         const photo: PhotoModel = new PhotoModel();
         photo.photoId = +data?.photo_id;
         photo.name = data?.name;
         photo.altText = data?.alt_text;
-        photo.filePath = data?.file_path;
-
-       
+        photo.filePath = data?.file_path;  
         return photo;
     }
 
-    public async getAllByCategoryId(categoryId: number, options: IPhotoAdapterOptions): Promise<PhotoModel[] | null> {
-        return this.getAllByFieldNameAndValue('category_id', categoryId, options);
+    public async getAllByCategoryId(photoId: number, options: IPhotoAdapterOptions): Promise<PhotoModel[] | null> {
+        return this.getAllByFieldNameAndValue('photo_id', photoId, options);
     }
  
 

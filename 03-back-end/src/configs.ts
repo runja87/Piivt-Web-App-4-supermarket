@@ -27,6 +27,24 @@ const DevConfig: IConfig = {
         charset: "utf8",
         timezone: "+01:00",
         supportBigNumbers: true,
+    },
+    fileUploads: {
+        maxFiles: 5,
+        maxFileSize: 5 * 1024 * 1024, //5Mb
+        tempFileDirectory: "../temp/",
+        destinationDirectoryRoot: "uploads/",
+        photos: {
+            allowedTypes: ["png", "jpg"],
+            allowedExtensions: [".png",".jpg"],
+            width: {
+                min: 320,
+                max: 1920,
+            },
+            height: {
+                min: 240,
+                max: 1080,
+            }
+        }
     }
  
 }

@@ -6,9 +6,12 @@ import filetype from 'magic-bytes.js';
 import sizeOf from "image-size";
 import * as uuid from "uuid";
 import { extname} from 'path';
+import IConfig from './IConfig.interface';
+import DevConfig from '../configs';
 
 
 export default abstract class BaseController {
+    
     private servicesInstances: IServices;
 
     constructor(services: IServices){ 
@@ -18,6 +21,7 @@ export default abstract class BaseController {
         return this.servicesInstances;
     }
     protected async doFileUpload(req: Request, res: Response): Promise<string [] | null> {
+        const config: IConfig = DevConfig;
         if (!req.files || Object.keys(req.files).length === 0) {
           res.status(400).send("No files were uploaded!");
           return null;
@@ -29,8 +33,8 @@ export default abstract class BaseController {
         const year = now.getFullYear();
         const month = ((now.getMonth() + 1) + "").padStart(2, "0");
     
-        const uploadDestinationRoot = "./static/";
-        const destinationDirectory = "uploads/" + year + "/" + month + "/";
+        const uploadDestinationRoot = config.server.static.path + "/";
+        const destinationDirectory = config.fileUploads.destinationDirectoryRoot + year + "/" + month + "/";
         mkdirSync(uploadDestinationRoot + destinationDirectory, {
           recursive: true,
           mode: "755",
@@ -41,14 +45,14 @@ export default abstract class BaseController {
                 const file = req.files[fileFieldName] as UploadedFile;
                 const type = filetype(readFileSync(file.tempFilePath))[0]?.typename;
     
-                if (!["png", "jpg"].includes(type)) {
+                if (!config.fileUploads.photos.allowedTypes.includes(type)) {
                   unlinkSync(file.tempFilePath);
                   res.status(415).send("File type is not supported!");
                   return null;
                 }
                 const declaredExtension = extname(file.name);
           
-                if (![".png", ".jpg"].includes(declaredExtension)) {
+                if (!config.fileUploads.photos.allowedExtensions.includes(declaredExtension)) {
                   unlinkSync(file.tempFilePath);
                   res.status(415).send("File extension is not supported!");
                   return null;
@@ -56,12 +60,12 @@ export default abstract class BaseController {
           
                 const size = sizeOf(file.tempFilePath);
           
-                if (size.width < 320 || size.width > 1920) {
+                if (size.width < config.fileUploads.photos.width.min || size.width > config.fileUploads.photos.width.max) {
                   unlinkSync(file.tempFilePath);
                   res.status(415).send("Image width is not supported!");
                   return null;
                 }
-                if (size.height < 240 || size.height > 1080) {
+                if (size.height < config.fileUploads.photos.height.min || size.height > config.fileUploads.photos.height.max) {
                   unlinkSync(file.tempFilePath);
                   res.status(415).send("Image height is not supported!");
                   return null;
@@ -71,7 +75,10 @@ export default abstract class BaseController {
     
                 file.mv(fileDestinationPath, error => {
                     if (error) {
-                       return reject(error);
+                      if(error){
+                       return res.status(500).send(`File ${fileFieldName} - could not be saved on the server!`);
+                      }
+                       return null;
                     } else {
                 
                         resolve(destinationDirectory + fileNameRandomPart + "-" + file.name);

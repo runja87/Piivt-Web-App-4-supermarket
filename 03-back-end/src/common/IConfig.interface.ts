@@ -1,3 +1,5 @@
+import { IRouter } from "express"
+
 export default interface IConfig {
 server: {
     port: number,
@@ -28,6 +30,24 @@ database: {
     supportBigNumbers: boolean,
 
 },
+fileUploads: {
+    maxFiles: number,
+    maxFileSize: number,
+    tempFileDirectory: string,
+    destinationDirectoryRoot: string,
+    photos: {
+        allowedTypes: string[],
+        allowedExtensions: string [],
+        width: {
+            min: number,
+            max: number,
+        },
+        height: {
+            min: number,
+            max: number,
+        }
+    }
+}
 
 
 };

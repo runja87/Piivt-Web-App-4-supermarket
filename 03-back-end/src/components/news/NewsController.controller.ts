@@ -3,19 +3,10 @@ import BaseController from '../../common/BaseController';
 import IAddNewsDto, { AddNewsValidator } from './dto/IAddNews.dto';
 import { DefaultCategoryAdapterOptions } from '../category/CategoryService.service';
 import IEditNewsDto, { EditNewsValidator } from './dto/IEditNews.dto';
-import { mkdirSync, readFileSync } from 'fs';
-import { UploadedFile } from 'express-fileupload';
-import filetype from 'magic-bytes.js';
-import { extname } from "path";
-import sizeOf from "image-size";
-import * as uuid from "uuid";
+import { basename } from "path";
 
 
-
-
-
-
-class NewsController extends BaseController {
+export class NewsController extends BaseController {
 
   async getAllNewsByCategoryId(req: Request, res: Response) {
     const categoryId: number = +req.params?.cid;
@@ -89,7 +80,7 @@ class NewsController extends BaseController {
         return res.status(400).send('Adding in wrong category!');
       }
 
-      const addedNews = await this.services.news.add({ title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, category_id: categoryId })
+      const addedNews = await this.services.news.add({ title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, category_id: categoryId });
       return res.send(addedNews);
     } catch (error) {
       return res.status(500).send(error?.message);
@@ -157,7 +148,7 @@ class NewsController extends BaseController {
           })
           .catch(error => {
             return res.status(500).send(error?.message);
-          })
+          });
       })
 
       .catch(error => {
@@ -165,60 +156,50 @@ class NewsController extends BaseController {
       });
 
   }
-
   async uploadPhoto(req: Request, res: Response) {
-    if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).send("No file were uploaded!")
-    }
-    const fileFieldNames = Object.keys(req.files)
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = ((now.getMonth() + 1) + "").padStart(2, "0");
+    const categoryId: number = +req.params?.cid;
+    const newsId: number = +req.params?.nid;
+    this.services.category.getById(categoryId, DefaultCategoryAdapterOptions)
+      .then(result => {
+        if (result === null) {
+          return res.status(404).send("Category not found!");
+        }
+        this.services.news.getById(newsId, DefaultCategoryAdapterOptions)
+          .then(async (result) => {
+            if (result === null) {
+              return res.status(404).send("News not found!");
+            }
 
-    const uploadDestinationRoot = "./static/";
-    const destinationDirectory = "uploads" + year + "/" + month + "/";
-    mkdirSync(uploadDestinationRoot + destinationDirectory, {
-      recursive: true, mode: 755,
+            const uploadedFiles =  await this.doFileUpload(req, res);
 
-    });
-    const uploadedFiles = [];
+            if (uploadedFiles === null) {
+              return;
+            }
+            const photos = [];
+            for (let singleFile of uploadedFiles) {
+              const fileName = basename(singleFile);
+              if(fileName.length > 64){
+                return res.status(400).send(`Photo ${fileName} must be no longer than 24 characters including spaces!`);
+              }
+              const photo = await this.services.photo.add({ name: fileName, file_path: singleFile, news_id: newsId }, {});
 
-    for (let fileFieldName of fileFieldNames) {
-      const file = req.files[fileFieldName] as UploadedFile;
-      const type = filetype(readFileSync(file.tempFilePath))[0].typename;
-      if (!["png", "jpg"].includes(type)) {
-        return res.status(415).send(`File ${fileFieldName} - type is not supported`);
-      }
-      const declaredExtension: string = extname(file.name);
-      if (![".png", ".jpg"].includes(declaredExtension)) {
-        return res.status(415).send(`File ${fileFieldName} - extension is not supported!`);
-      }
-      const size = sizeOf(file.tempFilePath);
-      if (size.width < 320 || size.width > 1920) {
-        return res.status(445).send(`File ${fileFieldName} - image width is not supported!`);
-      }
-      if (size.height < 240 || size.height > 1080) {
-        return res.status(445).send(`File ${fileFieldName} - image height is not supported!`);
-      }
-      const fileNameRandomPart = uuid.v4();
-      const fileDestinationPath = uploadDestinationRoot + destinationDirectory + fileNameRandomPart + "-" + file.name;
+              if (photo === null) {
+                return res.status(500).send("Failed to add this photo into the database!");
+              }
+              photos.push(photo);
+            }
 
-      file.mv(fileDestinationPath, error => {
-        return res.status(500).send(error);
+           return res.send(photos);
+          })
+          .catch(error => {
+            if (!res.headersSent) {
+              return res.status(500).send(error?.message);
+            }
+          });
+      })
+      .catch(error => {
+        return res.status(500).send(error?.message);
       });
-      uploadedFiles.push(destinationDirectory + fileNameRandomPart + "-" + file.name);
-    }
-    res.send(uploadedFiles);
   }
 
-
-
-
 }
-
-
-
-
-export default NewsController;
-
-

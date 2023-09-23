@@ -5,7 +5,9 @@
       "removeComments": true,
       "target": "ES6",
       "sourceMap": true,
-      "outDir": "./dist"
+      "outDir": "./dist",
+      "lib": ["es6"]
   },
   "exclude": ["dist","node_modules"]  
+
 }

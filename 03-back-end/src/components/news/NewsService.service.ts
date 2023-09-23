@@ -8,14 +8,14 @@ import IEditNews from "./dto/IEditNews.dto";
 
 
 
-class NewsAdapterOptions implements IAdapterOptions { }
+class INewsAdapterOptions implements IAdapterOptions { }
 
-class NewsService extends BaseService<NewsModel, NewsAdapterOptions> {
+class NewsService extends BaseService<NewsModel, INewsAdapterOptions> {
     tableName(): string {
         return "news";
     }
 
-    protected async adaptToModel(data: any): Promise<NewsModel> {
+    protected async adaptToModel(data: any, options:INewsAdapterOptions): Promise<NewsModel> {
         const news: NewsModel = new NewsModel();
         news.newsId = +data?.news_id;
         news.title = data?.title;
@@ -28,7 +28,7 @@ class NewsService extends BaseService<NewsModel, NewsAdapterOptions> {
         return news;
     }
 
-    public async getAllByCategoryId(categoryId: number, options: NewsAdapterOptions): Promise<NewsModel[] | null> {
+    public async getAllByCategoryId(categoryId: number, options: INewsAdapterOptions): Promise<NewsModel[] | null> {
         return this.getAllByFieldNameAndValue('category_id', categoryId, options);
     }
 

@@ -72,17 +72,15 @@ async function main() {
     application.use(express.urlencoded({extended: true})),
     application.use(fileUpload({
         limits: {
-            files: 5,
-            fileSize: 1024 * 1024 * 5,
+            files: config.fileUploads.maxFiles,
+            fileSize: config.fileUploads.maxFileSize,
         },
         abortOnLimit: true,
         useTempFiles: true,
-        tempFileDir: "../temp/",
+        tempFileDir: config.fileUploads.tempFileDirectory,
         createParentPath: true,
         safeFileNames: true,
-        preserveExtension: true,
-
-
+        preserveExtension: true, 
     }));
 
 
