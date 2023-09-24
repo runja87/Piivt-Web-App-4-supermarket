@@ -1,6 +1,20 @@
-import { IRouter } from "express"
 
+export interface IResize {
+    
+        prefix: string,
+        width: number,
+        height: number,
+        fit: "contain" | "cover",
+        defaultBackground: {
+            r: number,
+            g: number,
+            b: number,
+            alpha: number,
+        },
+    
+}
 export default interface IConfig {
+
 server: {
     port: number,
     static: {
@@ -46,6 +60,7 @@ fileUploads: {
             min: number,
             max: number,
         }
+        resize: IResize[],
     }
 }
 

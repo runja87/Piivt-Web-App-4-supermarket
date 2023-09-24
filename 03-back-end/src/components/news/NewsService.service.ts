@@ -1,6 +1,7 @@
 
 import BaseService from "../../common/BaseService";
 import IAdapterOptions from '../../common/IAdapterOptions.interface';
+import { DefaultCategoryAdapterOptions } from "../category/CategoryService.service";
 import NewsModel from './NewsModel.model';
 import IAddNews from "./dto/IAddNews.dto";
 import IEditNews from "./dto/IEditNews.dto";
@@ -25,6 +26,7 @@ class NewsService extends BaseService<NewsModel, INewsAdapterOptions> {
         news.createdAt = data?.created_at;
         news.modifiedAt = data?.modified_at;
         news.categoryId = +data?.category_id;
+        news.photos = await this.services.photo.getAllByNewsId(news.newsId,DefaultCategoryAdapterOptions);
         return news;
     }
 

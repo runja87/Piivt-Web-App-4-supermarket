@@ -16,7 +16,7 @@ class PageService extends BaseService<PageModel, IPageAdapterOptions> {
         return "page";
     }
 
-    protected async adaptToModel(data: any): Promise<PageModel> {
+    protected async adaptToModel(data: any, options: IPageAdapterOptions): Promise<PageModel> {
         const page: PageModel = new PageModel();
         page.pageId = +data?.page_id;
         page.title = data?.title;

@@ -75,6 +75,7 @@ photo                                                                           
 • alt_text                  VARCHAR     64                     D NULL           dodatni opis, seo tagovi
 • file_path                 TEXT                       UQ                       putanja datoteke
 • product_id                INT         10                 UN          FK       strain ključ ka tabeli proizvod
+• is_deleted                TINYINT      1          NN     UN   D 0             oznаčen kao izbrisan(da/ne)
 • page_id                   INT         10                 UN          FK       strain ključ ka tabeli stranica
 • news_id                   INT         10                 UN          FK       strain ključ ka tabeli vesti
 

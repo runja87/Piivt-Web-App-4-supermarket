@@ -26,8 +26,11 @@ class PhotoService extends BaseService<PhotoModel, IPhotoAdapterOptions> {
         return photo;
     }
 
-    public async getAllByCategoryId(photoId: number, options: IPhotoAdapterOptions): Promise<PhotoModel[] | null> {
+    public async getAllByPhotoId(photoId: number, options: IPhotoAdapterOptions): Promise<PhotoModel[] | null> {
         return this.getAllByFieldNameAndValue('photo_id', photoId, options);
+    }
+    public async getAllByNewsId(newsId: number, options: IPhotoAdapterOptions): Promise<PhotoModel[] | null> {
+        return this.getAllByFieldNameAndValue('news_id', newsId, options);
     }
  
 

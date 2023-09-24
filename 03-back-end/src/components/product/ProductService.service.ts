@@ -16,7 +16,7 @@ class ProductService extends BaseService<ProductModel, IProductAdapterOptions> {
         return "product";
     }
 
-    protected async adaptToModel(data: any): Promise<ProductModel> {
+    protected async adaptToModel(data: any, options: IProductAdapterOptions): Promise<ProductModel> {
         const product: ProductModel = new ProductModel();
         product.productId = +data?.product_id;
         product.name = data?.name;
