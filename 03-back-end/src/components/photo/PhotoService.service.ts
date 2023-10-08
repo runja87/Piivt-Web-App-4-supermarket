@@ -1,13 +1,7 @@
 import BaseService from "../../common/BaseService";
 import IAdapterOptions from '../../common/IAdapterOptions.interface';
-import IServiceData from "../../common/IServiceData.interface";
 import PhotoModel from "./PhotoModel.model";
 import IAddPhoto from "./dto/IAddPhoto.dto";
-
-
-
-
-
 
 
 class IPhotoAdapterOptions implements IAdapterOptions { }
@@ -22,15 +16,22 @@ class PhotoService extends BaseService<PhotoModel, IPhotoAdapterOptions> {
         photo.photoId = +data?.photo_id;
         photo.name = data?.name;
         photo.altText = data?.alt_text;
-        photo.filePath = data?.file_path;  
+        photo.isDeleted = data?.is_deleted;
+        photo.filePath = data?.file_path;
+        photo.newsId = data?.news_id;
+        photo.pageId = data?.page_id;
+        photo.productId = data?.product_id;  
         return photo;
     }
 
-    public async getAllByPhotoId(photoId: number, options: IPhotoAdapterOptions): Promise<PhotoModel[] | null> {
-        return this.getAllByFieldNameAndValue('photo_id', photoId, options);
+    public async getAllByProductId(productId: number, options: IPhotoAdapterOptions = {}): Promise<PhotoModel[] | null> {
+        return this.baseGetAllByFieldNameAndValue('product_id',productId, options);
     }
-    public async getAllByNewsId(newsId: number, options: IPhotoAdapterOptions): Promise<PhotoModel[] | null> {
-        return this.getAllByFieldNameAndValue('news_id', newsId, options);
+    public async getAllByNewsId(newsId: number, options: IPhotoAdapterOptions = {}): Promise<PhotoModel[] | null> {
+        return this.baseGetAllByFieldNameAndValue('news_id', newsId, options);
+    }
+    public async getAllByPageId(pageId: number, options: IPhotoAdapterOptions = {}): Promise<PhotoModel[] | null> {
+        return this.baseGetAllByFieldNameAndValue('page_id', pageId, options);
     }
  
 
