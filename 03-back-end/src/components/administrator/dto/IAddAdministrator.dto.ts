@@ -1,6 +1,8 @@
 import Ajv from "ajv";
+import addFormats from "ajv-formats";
 import IServiceData from "../../../common/IServiceData.interface";
 const ajv = new Ajv();
+addFormats(ajv);
 
 
 export interface IAddAdministratorDto  {
@@ -13,6 +15,8 @@ export default interface IAddAdministrator extends IServiceData {
     username: string;
     email: string;
     password_hash: string;
+    password_reset_code?: string;
+    password_reset_link?: string;
 
 }
 
@@ -27,7 +31,7 @@ const AddAdministratorValidator = ajv.compile({
 
         email: {
             type: "string",
-            pattern: "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
+            format: "email",
             
         },
         password: {

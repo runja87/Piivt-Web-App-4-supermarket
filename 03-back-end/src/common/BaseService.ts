@@ -23,12 +23,11 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
     abstract tableName(): string;
     protected abstract adaptToModel(data: any, options: AdapterOptions): Promise<ReturnModel>;
 
-    public getAll(options: AdapterOptions): Promise<ReturnModel[]> {
+    public getAll(options: AdapterOptions): Promise<ReturnModel[]|null> {
         const tableName = this.tableName();
         return new Promise<ReturnModel[]>(
             (resolve, reject) => {
                 const sql: string = `SELECT * FROM \`${tableName}\`;`;
-                console.log(sql);
                 this.db.execute(sql)
                     .then(async ([rows]) => {
                         if (rows === undefined) {
@@ -82,9 +81,15 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
 
     }
 
-    protected async getAllFromTableByFieldNameAndValue<OwnReturnType>(tableName: string, fieldName: string, value: any): Promise<OwnReturnType[]> {
+    protected async baseGetAllFromTableByFieldNameAndValue<OwnReturnType>(tableName: string, fieldName: string, value: any): Promise<OwnReturnType[]|null> {
         return new Promise((resolve, reject) => {
-                const sql =  `SELECT * FROM \`${ tableName }\` WHERE \`${ fieldName }\` = ? AND (is_deleted IS NULL OR is_deleted = 0);`;
+                let sql = null;
+                if(tableName.includes("administrator")){
+                    sql =  `SELECT * FROM \`${ tableName }\` WHERE \`${ fieldName }\` = ? AND is_active = 1;`;
+                }else{
+                    sql =  `SELECT * FROM \`${ tableName }\` WHERE \`${ fieldName }\` = ? AND (is_deleted IS NULL OR is_deleted = 0);`;
+                }
+                
                 this.db.execute(sql, [ value ])
                 .then( async ( [ rows ] ) => {
                     if (rows === undefined) {
@@ -105,10 +110,14 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
         );
     }
     
-    protected async getAllByFieldNameAndValue(fieldName: string, value: any, options: AdapterOptions): Promise<ReturnModel[]> {
+    protected async baseGetAllByFieldNameAndValue(fieldName: string, value: any, options: AdapterOptions): Promise<ReturnModel[]|null> {
         const tableName = this.tableName();
-        const sql: string = `SELECT * FROM \`${tableName}\` WHERE ${fieldName} = ? AND (is_deleted IS NULL OR is_deleted = 0);`;
-
+        let sql = null;
+        if(tableName.includes("administrator")){
+            sql =  `SELECT * FROM \`${ tableName }\` WHERE \`${ fieldName }\` = ? AND is_active = 1;`;
+        }else{
+            sql =  `SELECT * FROM \`${ tableName }\` WHERE \`${ fieldName }\` = ? AND (is_deleted IS NULL OR is_deleted = 0);`;
+        }
         try {
             const [rows]: any = await this.db.execute(sql, [value]);
             const items: ReturnModel[] = [];
@@ -124,6 +133,8 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
             throw new Error(`Error fetching data: ${error.message}`);
         }
     }
+
+    
     protected async baseAdd(data: IServiceData, options: AdapterOptions): Promise<ReturnModel> {
         const tableName = this.tableName();
 
@@ -186,34 +197,43 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
     }
     protected async baseDeleteById(id: number): Promise<boolean> {
         const tableName = this.tableName();
-
         return new Promise<boolean>((resolve, reject) => {
-
-            this.db.execute(`DESCRIBE ${tableName} is_deleted`)
+            if(!tableName.includes("administrator")){
+                this.db.execute(`DESCRIBE ${tableName} is_deleted`)
                 .then(([rows]: any) => {
-
-                    if (rows.length) {
-                        return this.db.execute(`UPDATE ${tableName} SET is_deleted = 1 WHERE ${tableName}_id = ?`, [id]);
-                    } else {
-
-                        return this.db.execute(`DELETE FROM ${tableName} WHERE ${tableName}_id = ?`, [id]);
-                    }
+                        if (rows.length) {
+                            return this.db.execute(`UPDATE ${tableName} SET is_deleted = 1 WHERE ${tableName}_id = ?`, [id]);
+                        } else {
+    
+                            return this.db.execute(`DELETE FROM ${tableName} WHERE ${tableName}_id = ?`, [id]);
+                        }
                 })
                 .then(([result]: any) => {
-                    if (result.affectedRows === 1) {
-                        return resolve(true);
-                    } else {
-                        return resolve(false);
-                    }
+                    return resolve(result.affectedRows === 1);
                 })
                 .catch(error => {
                     return reject(error);
                 });
 
+            }else{
+                      this.db.execute(`UPDATE ${tableName} SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END WHERE ${tableName}_id = ?`, [id])
+                .then(() => {
+                    return this.db.execute(`SELECT is_active FROM ${tableName} WHERE ${tableName}_id = ?`, [id]);
+                })
+                .then(([selectResult]: any) => {
+                    const newIsActiveStatus = selectResult[0].is_active;
+                    return resolve(newIsActiveStatus === 1);
+                })
+                .catch(error => {
+                    console.error("Database Error: ", error.message);
+                    return reject(error);
+                });
+            }            
+            
+            
         });
 
     }
-
 
    
 }

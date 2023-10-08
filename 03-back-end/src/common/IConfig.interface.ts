@@ -1,3 +1,5 @@
+import { Algorithm } from "jsonwebtoken"
+import IRouter from "./IRouter.interface"
 
 export interface IResize {
     
@@ -12,6 +14,42 @@ export interface IResize {
             alpha: number,
         },
     
+}
+export interface IMailConfiguration {
+    
+    service: string,
+    pool: boolean,
+    port: number,
+    logger: boolean,
+    requireTLS: boolean,
+    secure: boolean,
+    debug: boolean,
+    secureConnection: boolean,
+    tls: {
+      ciphers: string,
+      rejectUnauthorized: boolean 
+    },
+    auth: {
+        email: string,
+        pass: string
+    }
+
+}
+export interface ITokenProperties{
+       duration: number,
+       keys: {
+        public: string,
+        private: string,
+       }
+}
+
+export interface IAuthTokenOptions {
+    issuer: string,
+    algorithm: Algorithm,
+    tokens: {
+        auth: ITokenProperties,
+        refresh: ITokenProperties,
+    },
 }
 export default interface IConfig {
 
@@ -61,7 +99,12 @@ fileUploads: {
             max: number,
         }
         resize: IResize[],
-    }
+    },
+
+},
+mail: IMailConfiguration,
+auth: {
+    administrator: IAuthTokenOptions,
 }
 
 
