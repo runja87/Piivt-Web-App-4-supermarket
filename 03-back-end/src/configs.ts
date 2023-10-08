@@ -1,4 +1,7 @@
+import { toASCII } from "punycode";
 import IConfig from "./common/IConfig.interface";
+import { MailConfigurationParametars } from "./config.mail";
+import { readFileSync } from "fs";
 
 const DevConfig: IConfig = {
     server: {
@@ -62,8 +65,50 @@ const DevConfig: IConfig = {
 
             ]
         }
+    },
+    mail: {
+        service: "Outlook365",
+        pool: true,
+        port: 587,
+        requireTLS: true,
+        secure: true,
+        logger: true,
+        debug: true, 
+        secureConnection: false,   
+        tls: {
+          ciphers:'TLSv1.3',
+          rejectUnauthorized: true,
+        },
+        auth: {
+            email: 'nenad.mirazic.15@singimail.rs',
+            pass: '*************',
+        }
+    },
+   
+    auth: {
+        administrator: {
+            algorithm: "RS256",
+            issuer: "Piivt",
+            tokens: {
+                auth: {
+                    duration: 60 * 60 * 24, // For dev 24h, otherwise couple min.
+                    keys: {
+                        public: readFileSync("./.keystore/app.public","ascii"),
+                        private: readFileSync("./.keystore/app.private","ascii"),
+                    },
+                },
+                refresh: {
+                    duration: 60 * 60 * 24, // For dev 60 days, otherwise around month.
+                    keys: {
+                        public: readFileSync("./.keystore/app.public","ascii"),
+                        private: readFileSync("./.keystore/app.private","ascii"),
+                    },
+                },
+            }
+        }
     }
  
-}
+};
+DevConfig.mail = MailConfigurationParametars;
 
 export default DevConfig;
