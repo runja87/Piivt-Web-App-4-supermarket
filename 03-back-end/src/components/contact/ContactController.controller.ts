@@ -45,7 +45,7 @@ class ContactController extends BaseController {
     
       async deleteMessage(req: Request, res: Response) {
         const messageId: number = +req.params?.mid;
-        this.services.page.getById(messageId, DefaultCategoryAdapterOptions)
+        this.services.page.getById(messageId, {loadPhotos: false})
           .then(result => {
             if (result === null) {
               return res.status(404).send('Message could not be found or has been deleted!');

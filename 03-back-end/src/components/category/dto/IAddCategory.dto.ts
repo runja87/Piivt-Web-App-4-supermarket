@@ -9,7 +9,7 @@ enum CategoryType {
 export interface IAddCategoryDto {
     name: string;
     categoryType: CategoryType;
-    parentCategoryId: string;   // samo za testiranje api ja. stiyace preko servisnog DTO-a
+  
     
 }
 

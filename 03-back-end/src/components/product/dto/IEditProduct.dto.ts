@@ -7,26 +7,26 @@ const ajv = new Ajv();
 export interface IEditProductDto {
     name: string;
     description: string;
-    altText?: string | null;
+    altText?: string;
     price: number;
     sku: number;
     supply: number;
     isDeleted?: boolean;
     discount?: number;
-    isOnDiscount?: boolean| false;
+    isOnDiscount?: boolean;
 }
 
 
 export default interface IEditProduct extends IServiceData {
     name: string;
     description: string;
-    alt_text?: string | null;
+    alt_text?: string;
     price: number;
     sku: number;
     supply: number;
-    is_deleted: boolean | false;
-    discount?: number | null;
-    is_on_discount?: boolean | false;
+    is_deleted: number;
+    discount?: number;
+    is_on_discount?: number;
     category_id: number;
 
 }

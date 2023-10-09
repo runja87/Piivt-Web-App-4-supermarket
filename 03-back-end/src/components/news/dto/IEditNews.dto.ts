@@ -7,7 +7,8 @@ const ajv = new Ajv();
  export interface IEditNewsDto {
     title: string;
     content: string;
-    altText?: string | null;
+    altText?: string;
+    isDeleted: boolean;
     
 }
 
@@ -15,8 +16,8 @@ const ajv = new Ajv();
 export default interface IEditNews extends IServiceData {
     title: string;
     content: string;
-    alt_text?: string | null;
-    category_id: number; 
+    alt_text?: string;
+    is_deleted: number; 
 }
 
 const EditNewsValidator = ajv.compile({

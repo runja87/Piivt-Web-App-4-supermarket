@@ -9,7 +9,6 @@ enum CategoryType {
 export interface IEditCategoryDto {
     name: string;
     categoryType: CategoryType;
-    parentCategoryId: string; // samo za testiranje api ja. stiyace preko servisnog DTO-a
     isDeleted: boolean; 
     
 }
@@ -17,8 +16,8 @@ export interface IEditCategoryDto {
 export default interface IEditCategory extends IServiceData {
     name: string;
     category_type: CategoryType;
-    is_deleted: boolean;
-    //parent_id: number;
+    is_deleted: number;
+   
 
 }
 

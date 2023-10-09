@@ -33,10 +33,13 @@ class CategoryService extends BaseService<CategoryModel, ICategoryAdapterOptions
         
 
         if (options.loadNews) {
-            category.news = await this.services.news.getAllByCategoryId(category.categoryId, options);
+            category.news = await this.services.news.getAllByCategoryId(category.categoryId, {
+                loadPhotos: true,
+                loadCategory: false
+            });
         }
         if (options.loadProducts) {
-            category.products = await this.services.product.getAllByCategoryId(category.categoryId, options);
+            category.products = await this.services.product.getAllByCategoryId(category.categoryId, {loadCategory: false,loadPhotos: true});
         }
 
         return category;
@@ -74,7 +77,7 @@ async getThreeLevelDepth(options: ICategoryAdapterOptions) {
     const childrenOfRoot = allCategories.filter(cat => cat.parentCategoryId === parentCategoryId && cat.categoryId !== parentCategoryId);  // Exclude the parent itself
   
     for (let child of childrenOfRoot) {
-      child.children = await this.buildHierarchy(allCategories, child.categoryId, depth - 1);
+      child.threeLevelStructure = await this.buildHierarchy(allCategories, child.categoryId, depth - 1);
     }
   
     return childrenOfRoot;

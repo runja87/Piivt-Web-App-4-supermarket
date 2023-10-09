@@ -7,7 +7,7 @@ export interface IEditPageDto {
     title: string;
     content: string;
     altText?: string;
-    isDeleted?: boolean | false;
+    isDeleted?: boolean;
     
    
 
@@ -17,7 +17,7 @@ export default interface IEditPage extends IServiceData {
     title: string;
     content: string;
     alt_text?: string;
-    is_deleted?: boolean | false;
+    is_deleted?: number;
     
 }
 

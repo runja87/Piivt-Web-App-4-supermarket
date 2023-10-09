@@ -13,7 +13,7 @@ class CategoryModel implements IModel {
     isDeleted: boolean;
     parentCategoryId: number;
     
-    children?: CategoryModel[] = [];
+    threeLevelStructure?: CategoryModel[] = [];
     news?: NewsModel[] = [];
     products?: ProductModel[] = [];
   

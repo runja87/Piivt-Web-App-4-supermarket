@@ -7,7 +7,7 @@ import PhotoModel from '../photo/PhotoModel.model';
 class PageModel implements IModel {
     pageId: number;
     title: string;
-    altText: string;
+    altText: string | null;
     content: string;
     createdAt: string;
     modifiedAt: string;

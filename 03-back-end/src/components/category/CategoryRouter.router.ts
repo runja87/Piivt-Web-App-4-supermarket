@@ -4,6 +4,7 @@ import IApplicationResources from "../../common/IApplicationResources.interface"
 import IRouter from '../../common/IRouter.interface';
 import ProductController from "../product/ProductController.controller";
 import { NewsController } from "../news/NewsController.controller";
+import AuthMiddleware from "../../middlewares/AuthMiddleware";
 
 
 class CategoryRouter implements IRouter{
@@ -12,7 +13,7 @@ class CategoryRouter implements IRouter{
         const newsController: NewsController = new NewsController(resources.services);
         const productController: ProductController = new ProductController(resources.services);
 
-        application.get("/api/category",                            categoryController.getAll.bind(categoryController));
+        application.get("/api/category",                    AuthMiddleware.getVerified(), categoryController.getAll.bind(categoryController));
         application.get("/api/category/:id",                        categoryController.getById.bind(categoryController));
         application.get("/api/category/:cid/news/:nid",             newsController.getNewsById.bind(newsController));
         application.get("/api/category/:cid/news",                  newsController.getAllNewsByCategoryId.bind(newsController));
@@ -21,6 +22,7 @@ class CategoryRouter implements IRouter{
         application.post("/api/category",                           categoryController.add.bind(categoryController));
         application.post("/api/category/:cid/news",                 newsController.addNews.bind(newsController));
         application.post("/api/category/:cid/news/:nid/photo",      newsController.uploadPhoto.bind(newsController));
+        application.post("/api/category/:cid/product/:pid/photo",   productController.uploadPhoto.bind(productController));
         application.post("/api/category/:cid/product",              productController.addProduct.bind(productController));
         application.put("/api/category/:cid/news/:nid",             newsController.editNews.bind(newsController));
         application.put("/api/category/:cid",                       categoryController.edit.bind(categoryController));
@@ -28,6 +30,7 @@ class CategoryRouter implements IRouter{
         application.delete("/api/category/:cid/news/:nid",          newsController.deleteNews.bind(newsController));
         application.delete("/api/category/:cid/product/:pid",       productController.deleteProduct.bind(productController));
         application.delete("/api/category/:cid",                    categoryController.deleteCategory.bind(categoryController));
+
            
         
     }

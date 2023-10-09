@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import BaseController from '../../common/BaseController';
 import IAddNewsDto, { AddNewsValidator } from './dto/IAddNews.dto';
 import { DefaultCategoryAdapterOptions } from '../category/CategoryService.service';
+import { DefaultNewsAdapterOptions } from '../news/NewsService.service';
 import IEditNewsDto, { EditNewsValidator } from './dto/IEditNews.dto';
 import { basename } from "path";
-
 
 export class NewsController extends BaseController {
 
@@ -20,7 +20,7 @@ export class NewsController extends BaseController {
         }
 
         this.services.news.getAllByCategoryId(categoryId, {
-          loadNews: true, loadProducts: false
+          loadPhotos: true, loadCategory: false
         })
           .then(result => {
             return res.send(result);
@@ -46,11 +46,17 @@ export class NewsController extends BaseController {
         if (result === null) {
           return res.status(404).send('Category not found!');
         }
-
-        this.services.news.getById(newsId, { loadNews: true, loadProducts: false })
+        if (result.categoryType !== 'news') {
+          return res.status(400).send("Wrong category!");
+        }
+      
+        this.services.news.getById(newsId, { loadPhotos: true, loadCategory: true })
           .then(result => {
             if (result === null) {
               return res.status(404).send('News not found!');
+            }
+            if(result.isDeleted){
+              return res.status(404).send('News is deleted.');
             }
             else {
               return res.send(result);
@@ -80,7 +86,7 @@ export class NewsController extends BaseController {
         return res.status(400).send('Adding in wrong category!');
       }
 
-      const addedNews = await this.services.news.add({ title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, category_id: categoryId });
+      const addedNews = await this.services.news.add({ title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, category_id: categoryId }, DefaultNewsAdapterOptions);
       return res.send(addedNews);
     } catch (error) {
       return res.status(500).send(error?.message);
@@ -101,7 +107,7 @@ export class NewsController extends BaseController {
           return res.status(404).send('Category not found!');
         }
 
-        this.services.news.getById(newsId, {})
+        this.services.news.getById(newsId, DefaultNewsAdapterOptions)
           .then(result => {
             if (result === null) {
               return res.status(404).send('News not found!');
@@ -112,7 +118,7 @@ export class NewsController extends BaseController {
             if (result.categoryId !== categoryId) {
               return res.status(400).send('This news does not belong to this category!');
             }
-            this.services.news.editById(newsId, { title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, category_id: categoryId })
+            this.services.news.editById(newsId, { title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, is_deleted: (data as any).isDeleted }, DefaultNewsAdapterOptions)
               .then(result => {
                 return res.send(result);
               })
@@ -132,14 +138,20 @@ export class NewsController extends BaseController {
   async deleteNews(req: Request, res: Response) {
     const categoryId: number = +req.params?.cid;
     const newsId: number = +req.params?.nid;
-    this.services.news.getById(newsId, {})
-      .then(result => {
+    this.services.news.getById(newsId, DefaultNewsAdapterOptions)
+      .then(async result => {
         if (result === null || result.isDeleted) {
           return res.status(404).send('News not found or deleted!');
         }
 
         if (result.categoryId !== categoryId) {
           return res.status(400).send('This news does not belong to this category!');
+        }
+        const results = await this.services.photo.getAllByNewsId(newsId, DefaultNewsAdapterOptions);
+
+        for(let result of results){
+          let photoId = result.photoId;
+          this.services.photo.deleteById(photoId);
         }
 
         this.services.news.deleteById(newsId)
@@ -164,7 +176,7 @@ export class NewsController extends BaseController {
         if (result === null) {
           return res.status(404).send("Category not found!");
         }
-        this.services.news.getById(newsId, DefaultCategoryAdapterOptions)
+        this.services.news.getById(newsId, DefaultNewsAdapterOptions)
           .then(async (result) => {
             if (result === null) {
               return res.status(404).send("News not found!");
@@ -201,5 +213,7 @@ export class NewsController extends BaseController {
         return res.status(500).send(error?.message);
       });
   }
+
+
 
 }

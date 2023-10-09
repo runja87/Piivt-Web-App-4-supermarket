@@ -37,13 +37,16 @@ class CategoryController extends BaseController {
       if(category.isDeleted){
         return res.status(404).send('Category has been deleted.');
       }
+      
+      if(category.categoryType === 'news'){
+        return res.send(await this.services.category.getById(categoryId, {loadNews: true, loadProducts: false}));
+      }
+      else{
+        return res.send(await this.services.category.getById(categoryId, {loadNews: false, loadProducts: true}));
+      }
 
-      let loadNews = category.categoryType === 'news';
-      let loadProducts = !loadNews;
-
-      const detailedCategory = await this.services.category.getById(categoryId, { loadNews, loadProducts });
-
-      return res.send(detailedCategory);
+      
+     ;
     } catch (error) {
       return res.status(500).send(error?.message);
     }

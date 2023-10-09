@@ -13,6 +13,7 @@ class PageRouter implements IRouter{
         application.post("/api/page",                           pageController.addPage.bind(pageController));
         application.put("/api/page/:pid",                       pageController.editPage.bind(pageController));
         application.delete("/api/page/:pid",                    pageController.deletePage.bind(pageController));
+        application.post("/api/page/:pid/photo",                pageController.uploadPhoto.bind(pageController));
            
         
     }

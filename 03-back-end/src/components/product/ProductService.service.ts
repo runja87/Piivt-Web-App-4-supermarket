@@ -3,13 +3,24 @@ import IAdapterOptions from '../../common/IAdapterOptions.interface';
 import ProductModel from "./ProductModel.model";
 import IAddProduct from "./dto/IAddProduct.dto";
 import IEditProduct from "./dto/IEditProduct.dto";
+import { DefaultCategoryAdapterOptions } from "../category/CategoryService.service";
 
 
 
 
 
 
-class IProductAdapterOptions implements IAdapterOptions { }
+
+interface IProductAdapterOptions extends IAdapterOptions {
+    loadPhotos: boolean;
+    loadCategory: boolean;
+
+}
+const DefaultProductAdapterOptions: IProductAdapterOptions = {
+    loadPhotos: false,
+    loadCategory: false,
+
+}
 
 class ProductService extends BaseService<ProductModel, IProductAdapterOptions> {
     tableName(): string {
@@ -30,20 +41,31 @@ class ProductService extends BaseService<ProductModel, IProductAdapterOptions> {
         product.createdAt = data?.created_at;
         product.modifiedAt = data?.modified_at;
         product.categoryId = +data?.category_id;
+
+
+
+        if(options.loadCategory){
+            product.category = await this.services.category.getById(product.categoryId, DefaultCategoryAdapterOptions);
+            
+        }
+        if(options.loadPhotos){
+            product.photos = await this.services.photo.getAllByProductId(product.productId);
+        }
+
         return product;
     }
 
     public async getAllByCategoryId(categoryId: number, options: IProductAdapterOptions): Promise<ProductModel[] | null> {
-        return this.getAllByFieldNameAndValue('category_id', categoryId, options);
+        return this.baseGetAllByFieldNameAndValue('category_id', categoryId, options);
     }
  
 
-    public async add(data: IAddProduct): Promise<ProductModel> {
-        return this.baseAdd(data, {});
+    public async add(data: IAddProduct, options: IProductAdapterOptions): Promise<ProductModel> {
+        return this.baseAdd(data, options);
     }
 
-    public async editById(productId: number, data: IEditProduct): Promise<ProductModel> {
-        return this.baseEditById(productId, data, {});
+    public async editById(productId: number, data: IEditProduct, options: IProductAdapterOptions): Promise<ProductModel> {
+        return this.baseEditById(productId, data, options);
     }
 
     public async deleteById(productId: number): Promise<boolean> {
@@ -52,3 +74,4 @@ class ProductService extends BaseService<ProductModel, IProductAdapterOptions> {
 }
 
 export default ProductService;
+export { DefaultProductAdapterOptions };

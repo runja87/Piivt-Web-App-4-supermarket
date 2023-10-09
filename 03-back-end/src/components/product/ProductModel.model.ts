@@ -1,4 +1,5 @@
 import IModel from '../../common/IModel.interface';
+import CategoryModel from '../category/CategoryModel.model';
 import PhotoModel from '../photo/PhotoModel.model';
 
 
@@ -18,19 +19,20 @@ enum Percentage {
 class ProductModel implements IModel {
     productId: number;
     name: string;
-    altText: string;
+    altText: string | null;
     description: string;
     price: number;
     sku: number;
     supply: number;
     isOnDiscount: boolean;
-    discount: Percentage;
+    discount: Percentage | null;
     createdAt: string;
     modifiedAt: string;
     isDeleted: boolean;
     categoryId: number;
     
     photos?: PhotoModel[] = [];
+    category?: CategoryModel;
 
 }
 

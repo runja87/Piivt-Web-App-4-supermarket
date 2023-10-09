@@ -8,8 +8,14 @@ import IEditPage from "./dto/IEditPage.dto";
 
 
 
+interface IPageAdapterOptions extends IAdapterOptions {
+    loadPhotos: boolean;
 
-class IPageAdapterOptions implements IAdapterOptions { }
+}
+const DefaultPageAdapterOptions: IPageAdapterOptions = {
+    loadPhotos: true,
+
+}
 
 class PageService extends BaseService<PageModel, IPageAdapterOptions> {
     tableName(): string {
@@ -25,16 +31,20 @@ class PageService extends BaseService<PageModel, IPageAdapterOptions> {
         page.isDeleted = Boolean(data?.is_deleted);
         page.createdAt = data?.created_at;
         page.modifiedAt = data?.modified_at;
+
+        if(options.loadPhotos){
+            page.photos = await this.services.photo.getAllByPageId(page.pageId);
+        }
         return page;
     }
 
     
     public async add(data: IAddPage): Promise<PageModel> {
-        return this.baseAdd(data, {});
+        return this.baseAdd(data, DefaultPageAdapterOptions);
     }
 
     public async editById(pageId: number, data: IEditPage): Promise<PageModel> {
-        return this.baseEditById(pageId, data, {});
+        return this.baseEditById(pageId, data, DefaultPageAdapterOptions);
     }
 
     public async deleteById(pageId: number): Promise<boolean> {
@@ -43,3 +53,4 @@ class PageService extends BaseService<PageModel, IPageAdapterOptions> {
 }
 
 export default PageService;
+export { DefaultPageAdapterOptions };
