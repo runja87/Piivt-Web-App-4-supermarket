@@ -6,7 +6,11 @@
       "target": "ES6",
       "sourceMap": true,
       "outDir": "./dist",
-      "lib": ["es6"]
+      "lib": ["es6"],
+      "typeRoots": ["@types",
+    "./node_modules/@types/sharp",
+   
+    ]
   },
   "exclude": ["dist","node_modules"]  
 
