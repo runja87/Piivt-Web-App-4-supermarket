@@ -46,7 +46,8 @@ Realizovati veb sajt supermarketa koji ima ulogu veb prezentacije sa više kateg
 • username                  VARCHAR    64              UQ                       korisničko ime
 • email                     VARCHAR    64              UQ                       adresa el. pošte
 • password_hash             VARCHAR   128                                       heš lozinke
-• password_reset_link       TEXT                       UQ      D NULL           link za resetovanje pass
+• password_reset_link       VARCHAR   255              UQ      D NULL           link za resetovanje pass
+• password_reset_code       VARCHAR   128              UQ      D NULL           kod za resetovanje pass
 • is_active                 TINYINT      1                 UN  D 1              status naloga| 1 = active
 • created_at                TIMESTAMP                          D CT             vreme kreiranja naloga
 
@@ -158,7 +159,7 @@ contact                                                                         
   - Brisanje vesti                 (briše odabranu vest iz njene kategorije/potkategorije zajedno sa pripadajućim slikama)
   - Izmena vesti                   (menja naslov, sadržaj, alt text, sliku, kategoriju/potkategoriju)
   - Listanje stranica              (izlistava pojedinačne stranice prema odabranom naslovu)
-  - Dodavanje stranice             (dodaje novu stranicu)
+  - Dodavanje stranice             (dodaje novu stranicu sa pripadajucim slikama)
   - Izmena stranice                (menja naslov,sadržaj,alt text i sliku)
   - Brisanje stranice              (briše odabranu stranicu)
   - Listanje slika u galeriji      (izlistava sve slike u galeriji nezavisno od kategorija kojima su dodeljene)
@@ -166,7 +167,7 @@ contact                                                                         
   - Brisanje slike iz galerije     (briše slike iz galerije ukoliko već ne pripada određenom proizvodu/vesti)
   - Pregled kontakt poruka         (izlistava sve kontakt poruke)
   - Brisanje kontakt poruka        (briše odabranu kontakt poruku)
-- Izmena administratorskog naloga  (može da menja korisničko ime, email, password i deaktivaciju, samo na svom nalogu)
+- Izmena administratorskog naloga  (može da menja korisničko ime, email, password samo na svom nalogu i da kreira i deaktivira druge admin naloge)
 
 - Korisnik/posetilac sajta
 
