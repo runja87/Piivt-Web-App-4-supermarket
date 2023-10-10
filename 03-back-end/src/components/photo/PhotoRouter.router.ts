@@ -2,16 +2,17 @@ import * as express from 'express';
 import IApplicationResources from "../../common/IApplicationResources.interface";
 import IRouter from '../../common/IRouter.interface';
 import PhotoController from "./PhotoController.controller";
+import AuthMiddleware from '../../middlewares/AuthMiddleware';
 
 
 class PhotoRouter implements IRouter{
     public setupRoutes(application: express.Application, resources: IApplicationResources) {
         const photoController: PhotoController = new PhotoController(resources.services);
 
-        application.get("/api/photo",                            photoController.getAllPhotos.bind(photoController));
-        application.put("/api/photo/:pid",                       photoController.editPhoto.bind(photoController)); 
-        application.post("/api/page",                           photoController.uploadPhoto.bind(photoController));
-        application.delete("/api/photo/:pid",                    photoController.deletePhoto.bind(photoController));
+        application.get("/api/photo",                                                          photoController.getAllPhotos.bind(photoController));
+        application.put("/api/photo/:pid",                       AuthMiddleware.getVerified(), photoController.editPhoto.bind(photoController)); 
+        application.post("/api/page",                            AuthMiddleware.getVerified(), photoController.uploadPhoto.bind(photoController));
+        application.delete("/api/photo/:pid",                    AuthMiddleware.getVerified(), photoController.deletePhoto.bind(photoController));
      
            
         

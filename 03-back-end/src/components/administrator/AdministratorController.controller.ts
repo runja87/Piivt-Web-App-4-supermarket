@@ -108,9 +108,6 @@ export default class AdministratorController extends BaseController {
 
   async deactivateActivate(req: Request, res: Response) {
     const id: number = +req.params?.aid;
-    if( req.authorisation?.administratorId !== id){
-        return res.status(403).send("You are not autorized!")     
-     }
     this.services.administrator.getById(id, DefaultAdministratorOptions)
       .then(result => {
         if (result === null) {
