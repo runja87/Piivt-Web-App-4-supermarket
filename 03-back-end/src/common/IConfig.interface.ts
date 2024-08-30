@@ -18,17 +18,6 @@ export interface IResize {
 export interface IMailConfiguration {
     
     service: string,
-    pool: boolean,
-    port: number,
-    logger: boolean,
-    requireTLS: boolean,
-    secure: boolean,
-    debug: boolean,
-    secureConnection: boolean,
-    tls: {
-      ciphers: string,
-      rejectUnauthorized: boolean 
-    },
     auth: {
         email: string,
         pass: string
@@ -105,6 +94,7 @@ fileUploads: {
 mail: IMailConfiguration,
 auth: {
     administrator: IAuthTokenOptions,
+    allowAllRoutesWithoutAuthTokens: boolean,
 }
 
 
