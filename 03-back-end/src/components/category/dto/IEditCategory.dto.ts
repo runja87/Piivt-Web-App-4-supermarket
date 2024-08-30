@@ -4,21 +4,17 @@ const ajv = new Ajv();
 
 enum CategoryType {
     Products = "products",
-    News = "news"
+    News = "news",
+    RootCategories = "root"
 }
 export interface IEditCategoryDto {
     name: string;
     categoryType: CategoryType;
-    isDeleted: boolean; 
-    
 }
 
 export default interface IEditCategory extends IServiceData {
     name: string;
     category_type: CategoryType;
-    is_deleted: number;
-   
-
 }
 
 const EditCategoryValidator = ajv.compile({
@@ -32,21 +28,14 @@ const EditCategoryValidator = ajv.compile({
 
         categoryType: {
             type: "string",
-            enum: ["product", "news"],
+            enum: ["product", "news","root"],
         },
-        isDeleted: {
- 
-            type: "boolean",
-            
-            
-        }
        
     },
     required: [
         "name",
-        "categoryType",
     ],
-    additionalProperties: true,  // default false
+    additionalProperties: false,
 });
 
 

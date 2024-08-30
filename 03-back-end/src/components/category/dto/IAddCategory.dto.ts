@@ -39,7 +39,7 @@ const AddCategoryValidator = ajv.compile({
         "categoryType",
     
     ],
-    additionalProperties: true, // default false
+    additionalProperties: true,
 });
 
 

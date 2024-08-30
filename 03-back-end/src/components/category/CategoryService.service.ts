@@ -35,14 +35,17 @@ class CategoryService extends BaseService<CategoryModel, ICategoryAdapterOptions
         if (options.loadNews) {
             category.news = await this.services.news.getAllByCategoryId(category.categoryId, {
                 loadPhotos: true,
-                loadCategory: false
+                loadCategory: true
             });
         }
         if (options.loadProducts) {
-            category.products = await this.services.product.getAllByCategoryId(category.categoryId, {loadCategory: false,loadPhotos: true});
+            category.products = await this.services.product.getAllByCategoryId(category.categoryId, {loadCategory: true,loadPhotos: true});
         }
 
         return category;
+    }
+    public async getAllById(categoryid: number, options: ICategoryAdapterOptions):Promise<CategoryModel[]> {
+      return this.baseGetAllByFieldNameAndValue('category_id', categoryid, options);
     }
 
     public async add(data: IAddCategory, options: ICategoryAdapterOptions): Promise<CategoryModel> {
@@ -84,10 +87,9 @@ async getThreeLevelDepth(options: ICategoryAdapterOptions) {
   }
 
 
-  
-
-
 }
+
+
 
 export default CategoryService;
 

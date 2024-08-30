@@ -4,6 +4,7 @@ import { AddCategoryValidator } from '../category/dto/IAddCategory.dto';
 import IAddCategoryDto from '../category/dto/IAddCategory.dto';
 import IEditCategoryDto, { EditCategoryValidator } from './dto/IEditCategory.dto';
 import BaseController from '../../common/BaseController';
+import CategoryModel from './CategoryModel.model';
 
 
 
@@ -59,6 +60,10 @@ class CategoryController extends BaseController {
     if (!AddCategoryValidator(data)) {
       return res.status(400).send(AddCategoryValidator.errors);
     }
+    const category: CategoryModel = new CategoryModel();
+    if (category.categoryType.localeCompare(data.category_type)){
+      return res.status(409).json({ message: "Wrong category type!" });
+    }
 
     this.services.category.add({ name: (data as any).name, category_type: (data as any).categoryType, parent_id: (data as any).parentCategoryId }, DefaultCategoryAdapterOptions)
       .then(result => {
@@ -84,23 +89,23 @@ class CategoryController extends BaseController {
         if (category === null) {
             return res.status(404).send('Category not found.');
         }
+        if (category.name === (data.name)){
+          return res.status(409).json({ message: "A category with this name already exists." });
+        }
+        if (category.categoryType.localeCompare === (data.category_type.localeCompare)){
+          return res.status(409).json({ message: "Wrong category type!" });
+        }
 
         const editedCategory = await this.services.category.editById(id, {
             name: (data as any).name,
-            is_deleted: (data as any).isDeleted,
             category_type: (data as any).categoryType
         }, DefaultCategoryAdapterOptions);
 
         return res.send(editedCategory);
 
     } catch (error) {
-        if (error.message && error.message.includes('some specific error about editing')) { 
-            
-            return res.status(400).send('Unable to edit this category!');
-        }
-
-        return res.status(500).send(error?.message);
-    }
+      return res.status(500).send(error?.message);
+    }  
 }
 
   async deleteCategory(req: Request, res: Response) {
