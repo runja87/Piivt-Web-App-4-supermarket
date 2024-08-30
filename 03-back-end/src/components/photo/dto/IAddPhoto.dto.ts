@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import IServiceData from "../../../common/IServiceData.interface";
-const ajv = new Ajv();
+
 
 export default interface IAddPhoto extends IServiceData {
     name: string;

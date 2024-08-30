@@ -5,7 +5,7 @@ const ajv = new Ajv();
 export interface IEditPhotoDto {
 
     name?: string;
-    altText: string;
+    altText?: string;
     
 }
 
@@ -28,6 +28,7 @@ const EditPhotoValidator = ajv.compile({
         altText: {
             type: "string",
             maxLength: 128,
+            pattern: "^#[a-z]{5,}$",
           },
           isDeleted:
           {
