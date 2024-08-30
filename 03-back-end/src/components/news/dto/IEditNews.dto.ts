@@ -5,19 +5,19 @@ const ajv = new Ajv();
 
 
  export interface IEditNewsDto {
-    title: string;
-    content: string;
+    title?: string;
+    content?: string;
     altText?: string;
-    isDeleted: boolean;
+    isDeleted?: boolean;
     
 }
 
 
 export default interface IEditNews extends IServiceData {
-    title: string;
-    content: string;
-    alt_text?: string;
-    is_deleted: number; 
+    title?: string;
+    content?: string;
+    alt_text?: string | null;
+    is_deleted?: number; 
 }
 
 const EditNewsValidator = ajv.compile({
@@ -37,15 +37,13 @@ const EditNewsValidator = ajv.compile({
         altText: {
             type: "string",
             maxLength: 128,
-            default: null,
+            pattern: "^#([a-z]{5,})(?=(#|$))|^$",
         },
 
     },
-    required: [
-        "title",
-        "content",  
+    required: [  
     ],
-    additionalProperties: false,
+    additionalProperties: true,
 });
 
 export { EditNewsValidator };

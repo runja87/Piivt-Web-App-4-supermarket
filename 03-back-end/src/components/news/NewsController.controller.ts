@@ -20,7 +20,7 @@ export class NewsController extends BaseController {
         }
 
         this.services.news.getAllByCategoryId(categoryId, {
-          loadPhotos: true, loadCategory: false
+          loadPhotos: true, loadCategory: true
         })
           .then(result => {
             return res.send(result);
@@ -86,7 +86,7 @@ export class NewsController extends BaseController {
         return res.status(400).send('Adding in wrong category!');
       }
 
-      const addedNews = await this.services.news.add({ title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, category_id: categoryId }, DefaultNewsAdapterOptions);
+      const addedNews = await this.services.news.add({ title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText || null, category_id: categoryId }, DefaultNewsAdapterOptions);
       return res.send(addedNews);
     } catch (error) {
       return res.status(500).send(error?.message);
@@ -118,7 +118,7 @@ export class NewsController extends BaseController {
             if (result.categoryId !== categoryId) {
               return res.status(400).send('This news does not belong to this category!');
             }
-            this.services.news.editById(newsId, { title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, is_deleted: (data as any).isDeleted }, DefaultNewsAdapterOptions)
+            this.services.news.editById(newsId, { title: (data as any)?.title, content: (data as any)?.content, is_deleted: (data as any)?.isDeleted }, DefaultNewsAdapterOptions)
               .then(result => {
                 return res.send(result);
               })
