@@ -1,11 +1,9 @@
-import { send } from "process";
 import BaseService from "../../common/BaseService";
 import IAdapterOptions from '../../common/IAdapterOptions.interface';
 import { AdministratorModel } from "./AdministratorModel.model";
 import IAddAdministrator from './dto/IAddAdministrator.dto';
 import IEditAdministrator from './dto/IEditAdministrator.dto';
-import { resolve } from "path";
-import { error } from "console";
+
 
 export class IAdministratorAdapterOptions implements IAdapterOptions { 
         removePassword: boolean;
@@ -47,12 +45,13 @@ export default class AdministratorService extends BaseService <AdministratorMode
                 return this.baseAdd(data, options);
         }
 
-        public async edit(id: number, data: IEditAdministrator, options: IAdministratorAdapterOptions): Promise<AdministratorModel>{
-                return this.baseEditById(id,data, options);
+        public async edit(id: number, data: IEditAdministrator, options: IAdministratorAdapterOptions): Promise<AdministratorModel[]>{
+                const admins: AdministratorModel [] = [];
+                const editedAdmin = await this.baseEditById(id, data, options); 
+                admins.push(editedAdmin);
+                return admins;
         }
-        public async deactivateActivate(id: number):Promise<boolean> {
-                return this.baseDeleteById(id);
-        }
+
         public async getByEmail(value: string): Promise<AdministratorModel[]|null>{
                 return this.baseGetAllByFieldNameAndValue("email", value,DefaultAdministratorOptions);
         }
