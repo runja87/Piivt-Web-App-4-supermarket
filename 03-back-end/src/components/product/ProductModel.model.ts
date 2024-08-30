@@ -25,7 +25,7 @@ class ProductModel implements IModel {
     sku: number;
     supply: number;
     isOnDiscount: boolean;
-    discount: Percentage | null;
+    discount: Percentage;
     createdAt: string;
     modifiedAt: string;
     isDeleted: boolean;

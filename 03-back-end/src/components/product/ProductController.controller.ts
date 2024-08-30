@@ -133,7 +133,6 @@ class ProductController extends BaseController {
                   supply: (data as any).supply,
                   discount: (data as any).discount || null,
                   is_on_discount: (data as any).isOnDiscount || 0,
-                  is_deleted: (data as any).isDeleted,
                   category_id: categoryId
                 };
     

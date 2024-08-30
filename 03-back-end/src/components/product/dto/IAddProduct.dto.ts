@@ -60,6 +60,7 @@ const AddProductValidator = ajv.compile({
             type: "string",
             maxLength: 128,
             default: null,
+            pattern: "^#[a-z]{5,}$",
           },
 
     },
