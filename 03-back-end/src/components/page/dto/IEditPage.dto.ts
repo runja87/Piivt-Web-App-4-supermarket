@@ -38,6 +38,7 @@ const EditPageValidator = ajv.compile({
         altText: {
             type: "string",
             maxLength: 128,
+            pattern: "^#[a-z]{5,}$",
           },
           isDeleted:
           {
