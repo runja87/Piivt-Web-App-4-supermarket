@@ -11,6 +11,9 @@ export default class AuthMiddleware {
         }
     }
     private static verifyAuthToken(req: Request, res: Response, next: NextFunction){
+        if(DevConfig.auth.allowAllRoutesWithoutAuthTokens){
+            return next();
+        }
         const tokenHeader: string = req.headers?.authorization ?? "";
         try {
            const check = this.validateTokenAs(tokenHeader, "auth");
