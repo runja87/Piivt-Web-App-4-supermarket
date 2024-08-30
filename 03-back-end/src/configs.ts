@@ -1,6 +1,6 @@
 import { toASCII } from "punycode";
 import IConfig from "./common/IConfig.interface";
-import { MailConfigurationParametars } from "./config.mail";
+//import { MailConfigurationParametars } from "./config.mail";
 import { readFileSync } from "fs";
 
 const DevConfig: IConfig = {
@@ -68,20 +68,9 @@ const DevConfig: IConfig = {
     },
     mail: {
         service: "Outlook365",
-        pool: true,
-        port: 587,
-        requireTLS: true,
-        secure: true,
-        logger: true,
-        debug: true, 
-        secureConnection: false,   
-        tls: {
-          ciphers:'TLSv1.3',
-          rejectUnauthorized: true,
-        },
         auth: {
             email: 'nenad.mirazic.15@singimail.rs',
-            pass: '*************',
+            pass: 'JTuvQpMXtwj5KYt',
         }
     },
    
@@ -104,11 +93,12 @@ const DevConfig: IConfig = {
                         private: readFileSync("./.keystore/app.private","ascii"),
                     },
                 },
-            }
-        }
-    }
+            },
+        },
+        allowAllRoutesWithoutAuthTokens: true, // TRUE Samo dok traje razvoj front-end bez mogucnosti prijave
+    },
  
 };
-DevConfig.mail = MailConfigurationParametars;
+//DevConfig.mail = MailConfigurationParametars;
 
 export default DevConfig;
