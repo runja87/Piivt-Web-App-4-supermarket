@@ -50,8 +50,8 @@ const DevConfig: IConfig = {
             resize: [
                 {
                     prefix: "small-",
-                    width: 320,
-                    height: 240,
+                    width: 160,
+                    height: 120,
                     fit: "cover",
                     defaultBackground: {r: 0, g: 0, b: 0, alpha: 1, }
                 },
