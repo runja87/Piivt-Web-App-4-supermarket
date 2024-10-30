@@ -9,9 +9,9 @@ class PhotoRouter implements IRouter{
     public setupRoutes(application: express.Application, resources: IApplicationResources) {
         const photoController: PhotoController = new PhotoController(resources.services);
 
-        application.get("/api/photo",                                                          photoController.getAllPhotos.bind(photoController));
+        application.get("/api/photos",                                                          photoController.getAllPhotos.bind(photoController));
         application.put("/api/photo/:pid",                       AuthMiddleware.getVerified(), photoController.editPhoto.bind(photoController)); 
-        application.post("/api/page",                            AuthMiddleware.getVerified(), photoController.uploadPhoto.bind(photoController));
+        application.post("/api/photo",                            AuthMiddleware.getVerified(), photoController.uploadPhoto.bind(photoController));
         application.delete("/api/photo/:pid",                    AuthMiddleware.getVerified(), photoController.deletePhoto.bind(photoController));
      
            

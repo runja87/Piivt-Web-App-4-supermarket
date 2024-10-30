@@ -1,5 +1,6 @@
 import BaseService from "../../common/BaseService";
 import IAdapterOptions from '../../common/IAdapterOptions.interface';
+import IServiceData from "../../common/IServiceData.interface";
 import PhotoModel from "./PhotoModel.model";
 import IAddPhoto from "./dto/IAddPhoto.dto";
 
@@ -33,13 +34,11 @@ class PhotoService extends BaseService<PhotoModel, IPhotoAdapterOptions> {
     public async getAllByPageId(pageId: number, options: IPhotoAdapterOptions = {}): Promise<PhotoModel[] | null> {
         return this.baseGetAllByFieldNameAndValue('page_id', pageId, options);
     }
- 
-
     public async add(data: IAddPhoto, options: IPhotoAdapterOptions = {}): Promise<PhotoModel> {
         return this.baseAdd(data, {});
     }
 
-    public async editById(photoId: number, data: IPhotoAdapterOptions): Promise<PhotoModel> {
+    public async editById(photoId: number, data: IServiceData): Promise<PhotoModel> {
         return this.baseEditById(photoId, data, {});
     }
 

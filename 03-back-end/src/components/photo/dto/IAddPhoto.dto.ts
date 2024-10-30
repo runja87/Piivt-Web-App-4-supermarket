@@ -1,4 +1,3 @@
-import Ajv from "ajv";
 import IServiceData from "../../../common/IServiceData.interface";
 
 

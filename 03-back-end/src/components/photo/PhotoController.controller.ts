@@ -1,7 +1,10 @@
 import BaseController from "../../common/BaseController";
 import { Request, Response } from 'express';
 import { basename } from "path";
-import IEditPhotoDto, { EditPhotoValidator } from "./dto/IEditPhoto.dto";
+import IEditPhotoDto, { EditPhotoValidator, IEditPhoto } from "./dto/IEditPhoto.dto";
+import PhotoModel from "./PhotoModel.model";
+import IAddPhoto from "./dto/IAddPhoto.dto";
+
 
 class PhotoController extends BaseController {
 
@@ -19,50 +22,83 @@ class PhotoController extends BaseController {
        
     }
     
-      async editPhoto(req: Request, res: Response) {
+    async editPhoto(req: Request, res: Response) {
+      try {
         const photoId: number = +req.params?.pid;
         const data: IEditPhotoDto = req.body;
-        if (!EditPhotoValidator(data)) {
-          return res.status(400).send(EditPhotoValidator.errors);
+    
+        const existingPhoto = await this.services.photo.getById(photoId, {});
+        if (!existingPhoto || existingPhoto.isDeleted) {
+          return res.status(404).send('Photo not found or deleted!');
         }
-        this.services.photo.getById(photoId, {})
-          .then(result => {
-            if (result === null || result.isDeleted) {
-              return res.status(404).send('Photo not found or deleted!');
+        if (req.files && req.files.name) {
+          const uploadedFiles = await this.doFileUpload(req, res);
+          let photo = null;
+          let photos: PhotoModel[] = [];
+          for (let singleFile of uploadedFiles) {
+            const fileName = basename(singleFile);    
+            if (fileName.length > 64) {
+              return res.status(400).send(`Photo ${fileName} must be no longer than 64 characters including spaces!`);
             }
-    
-                this.services.photo.editById(photoId, {name: (data as any).name, alt_text: (data as any).altText, is_deleted: (data as any).isDeleted})
-                  .then(result => {
-                    return res.send(result);
-                  })
-                  .catch(error => {
-                    return res.status(500).send(error?.message);
-                  });
-              })
+            let data: IEditPhoto = {name: fileName, file_path: singleFile};
+            photo = await this.services.photo.editById(photoId, data);
+           
+            if (!photo) {
+              return res.status(500).send("Failed to replace the photo in the database!");
+            }
+            photos.push(photo);
+            
+          }
+          return res.send(photos);
+      
+        } else {
+          if (!EditPhotoValidator(data)) {
+            return res.status(400).send(EditPhotoValidator.errors);
+          }
+          await this.services.photo.editById(photoId, { alt_text: data?.altText });
+          return res.send({ message: 'Photo altText updated successfully' });
+        }
+      } catch (error) {
+        return res.status(500).send(error?.message || 'An unexpected error occurred.');
       }
+    }
+    
+    
 
-      async uploadPhoto(req: Request, res: Response) {
-                const uploadedFiles =  await this.doFileUpload(req, res);
-    
-                if (uploadedFiles === null) {
-                  return;
-                }
-                const photos = [];
-                for (let singleFile of uploadedFiles) {
-                  const fileName = basename(singleFile);
-                  if(fileName.length > 64){
-                    return res.status(400).send(`Photo ${fileName} must be no longer than 24 characters including spaces!`);
-                  }
-                  const photo = await this.services.photo.add({ name: fileName, file_path: singleFile }, {});
-    
-                  if (photo === null) {
-                    return res.status(500).send("Failed to add this photo into the database!");
-                  }
-                  photos.push(photo);
-                }
-    
-               return res.send(photos);
+async uploadPhoto(req: Request, res: Response) {
+  try {
+    const uploadedFiles = await this.doFileUpload(req, res);
+
+    if (!uploadedFiles || uploadedFiles.length === 0) {
+      return res.status(400).send('No files uploaded.');
+    }
+
+    const photos: PhotoModel[] = [];
+    let photo;
+    for (let singleFile of uploadedFiles) {
+      const fileName = basename(singleFile);
+
+      if (fileName.length > 64) {
+        return res.status(400).send(`Photo ${fileName} must be no longer than 64 characters including spaces!`);
       }
+      let data: IAddPhoto = {name: fileName, file_path: singleFile};
+        photo = await this.services.photo.add(data,{});
+     
+
+      if (!photo) {
+        return res.status(500).send("Failed to add the photo in the database!");
+      }
+      photos.push(photo);
+    }
+
+    return res.send(photos);
+  } catch (error) {
+    console.error("Error in uploadPhoto:", error);
+    return res.status(500).send(error?.message || 'An unexpected error occurred.');
+  }
+}
+
+      
     
     
       async deletePhoto(req: Request, res: Response) {
@@ -72,12 +108,9 @@ class PhotoController extends BaseController {
             if (result === null) {
               return res.status(404).send('Photo not found or it is already marked as deleted!');
             }
-            if(result.newsId !== null || result.pageId !== null || result.productId !== null){
-              return res.status(400).send('Photo could not be deleted!');
-            }
       
             this.services.photo.deleteById(photoId)
-              .then(result => {
+              .then(() => {
                 return res.send('This photo has been deleted!');
               })
               .catch(error => {
