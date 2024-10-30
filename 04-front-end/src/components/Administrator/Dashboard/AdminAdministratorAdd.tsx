@@ -57,9 +57,9 @@ export default function AdminAdministratorAdd() {
                     <input type="password" id="input-password" className="form-control" value={password} onChange={ e => setPassword(e.target.value)}/>
                 </div>
                 <div className="form-group">
-                    <button className="btn btn-primary" onClick={ () => doAddAdministrator() }>
+                    <button className="btn btn-dark" onClick={ () => doAddAdministrator() }>
                         <FontAwesomeIcon icon={ faSave }/>
-                        &nbsp; Add new administrator
+                        &nbsp; Add New 
                     </button>
                     <button className="btn btn-black" onClick={ () => navigate("/admin/dashboard")}>
                         Cancel

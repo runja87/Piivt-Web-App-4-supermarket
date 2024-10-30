@@ -1,10 +1,88 @@
-.admin-list
-    tr
-        td:first-child
-            width: 50px
+.admin-list-container
+  padding: 20px
+  max-width: 100%
+  margin: 0 auto
 
-        td:nth-child(3)
-            width: 75px
+  .btn-back
+    margin-bottom: 10px
 
-        td:nth-child(4)
-            width: 500px
+  .alert
+    margin-bottom: 20px
+
+  .admin-list-wrapper
+    overflow-x: auto 
+    -webkit-overflow-scrolling: touch 
+    width: 100%
+    border: 1px solid #ddd
+    border-radius: 8px
+
+  .admin-list
+    width: 100%
+    min-width: 600px 
+    border-collapse: collapse
+    font-size: 0.9em
+    text-align: left
+
+    th, td
+      padding: 8px 12px
+      border-bottom: 1px solid #ddd
+      white-space: nowrap
+
+    th
+      background-color: #f2f2f2
+      font-weight: bold
+
+    td.username, td.email
+      max-width: 150px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+
+    .btn-group
+      display: flex
+      justify-content: center
+
+    .form-control-sm, .btn-sm
+      font-size: 0.8em
+      padding: 5px 8px
+
+    .btn-primary
+      background-color: #007bff
+      color: #fff
+      border: none
+
+    .btn-light
+      background-color: #f8f9fa
+      color: #333
+      border: 1px solid #ddd
+
+
+  @media (max-width: 768px)
+    .admin-list-container
+      padding: 15px
+
+    .btn-back
+      margin-bottom: 15px
+
+    .admin-list
+      font-size: 0.8em
+
+      th, td
+        padding: 6px 8px
+
+      .btn-group
+        justify-content: center
+
+  @media (max-width: 480px)
+    .admin-list-container
+      padding: 10px
+
+    .admin-list
+      font-size: 0.8em
+
+      .btn-sm
+        font-size: 0.7em
+        padding: 4px 6px
+
+      .form-control-sm
+        padding: 4px
