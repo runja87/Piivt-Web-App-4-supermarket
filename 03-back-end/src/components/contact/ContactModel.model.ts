@@ -4,6 +4,7 @@ import IModel from '../../common/IModel.interface';
 
 
 class ContacttModel implements IModel {
+    messageId: number;
     firstName: string;
     lastName: string;
     email: string;

@@ -18,13 +18,13 @@ class ContactService extends BaseService<ContactModel, IContactAdapterOptions> {
 
     protected async adaptToModel(data: any): Promise<ContactModel> {
         const contact: ContactModel = new ContactModel();
-        
-        contact.firstName = data?.firstName;
-        contact.lastName= data?.lastName;
-        contact.title = data?.title;
-        contact.email = data?.email;
-        contact.createdAt = data?.created_at;
-        contact.message = data?.message;
+        contact.messageId = data.contact_id;
+        contact.firstName = data.firstname;
+        contact.lastName= data.lastname;
+        contact.title = data.title;
+        contact.email = data.email;
+        contact.createdAt = data.created_at;
+        contact.message = data.message;
         return contact;
     }
 
