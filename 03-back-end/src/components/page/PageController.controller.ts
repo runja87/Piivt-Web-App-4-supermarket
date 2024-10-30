@@ -2,9 +2,11 @@ import BaseController from "../../common/BaseController";
 import { Request, Response } from 'express';
 import IAddPageDto, { AddPageValidator } from "./dto/IAddPage.dto";
 import { DefaultPageAdapterOptions } from "../page/PageService.service";
-import { DefaultCategoryAdapterOptions } from '../category/CategoryService.service';
 import IEditPageDto, { EditPageValidator } from "./dto/IEditPage.dto";
 import { basename } from "path";
+import IAddPhoto from "../photo/dto/IAddPhoto.dto";
+import PhotoModel from "../photo/PhotoModel.model";
+import { IEditPhoto } from "../photo/dto/IEditPhoto.dto";
 
 class PageController extends BaseController {
 
@@ -43,8 +45,8 @@ class PageController extends BaseController {
         if (!AddPageValidator(data)) {
           return res.status(400).send(AddPageValidator.errors);
         }    
-        
-          this.services.page.add({title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText})
+          const payload = {title: data.title, content: data.content, alt_text: data?.altText};
+          this.services.page.add(payload)
           .then(result => {
            return res.send(result);
           })
@@ -53,6 +55,41 @@ class PageController extends BaseController {
             return res.status(500).send(error?.message);
           });
     
+      }
+
+      async uploadPagePhoto(req: Request, res: Response) {
+        try {
+          const pageId: number = +req.params?.pid;
+          
+          const uploadedFiles = await this.doFileUpload(req, res);
+      
+          if (!uploadedFiles || uploadedFiles.length === 0) {
+            return res.status(400).send('No files uploaded.');
+          }
+      
+          let photos: PhotoModel[] = [];
+          let photo = null;
+          for (let singleFile of uploadedFiles) {
+            const fileName = basename(singleFile);
+      
+            if (fileName.length > 64) {
+              return res.status(400).send(`Photo ${fileName} must be no longer than 64 characters including spaces!`);
+            }
+            let data: IAddPhoto = {name: fileName, file_path: singleFile, page_id: pageId };
+            photo = await this.services.photo.add(data,{});
+           
+      
+            if (!photo) {
+              return res.status(500).send("Failed to add the photo in the database!");
+            }
+            photos.push(photo);
+          }
+      
+          return res.send(photos);
+        } catch (error) {
+          console.error("Error in uploadPhoto:", error);
+          return res.status(500).send(error?.message || 'An unexpected error occurred.');
+        }
       }
     
       async editPage(req: Request, res: Response) {
@@ -66,8 +103,8 @@ class PageController extends BaseController {
             if (result === null || result.isDeleted) {
               return res.status(404).send('Page not found or deleted!');
             }
-    
-                this.services.page.editById(pageId, {title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText, is_deleted: (data as any).isDeleted})
+              let payload = {title: data?.title, content: data?.content, alt_text: data.altText};
+                this.services.page.editById(pageId, payload)
                   .then(result => {
                     return res.send(result);
                   })
@@ -75,6 +112,40 @@ class PageController extends BaseController {
                     return res.status(500).send(error?.message);
                   });
               })
+      }
+
+      async editPagePhoto(req: Request, res: Response) {
+        try {
+          const photoId: number = +req.params?.phid;
+          const pageId: number = +req.params?.pid;
+      
+          const existingPhotos = await this.services.photo.getAllByPageId(pageId, {});
+          const specificPhoto = existingPhotos.find((photo) => photo.photoId === photoId);
+
+          if (!specificPhoto || specificPhoto.isDeleted ) {
+            return res.status(404).send('Photo for the page is not found or it has been deleted!');
+          }
+            const uploadedFiles = await this.doFileUpload(req, res);
+            let photo = null;
+            let photos: PhotoModel[] = [];
+            for (let singleFile of uploadedFiles) {
+              const fileName = basename(singleFile);
+              if (fileName.length > 64) {          
+                return res.status(400).send(`Photo ${fileName} must be no longer than 64 characters including spaces!`);
+              }
+              let payload: IEditPhoto = {name: fileName, file_path: singleFile};
+              photo = await this.services.photo.editById(photoId, payload);
+             
+              if (!photo) {
+                return res.status(500).send("Failed to replace the photo in the database!");
+              }
+              photos.push(photo);
+              
+            }
+            return res.send(photos);
+        } catch (error) {
+          return res.status(500).send(error?.message || 'An unexpected error occurred.');
+        }
       }
     
     
@@ -99,52 +170,6 @@ class PageController extends BaseController {
                 return res.status(500).send(error?.message);
               })
     
-          })
-          .catch(error => {
-            return res.status(500).send(error?.message);
-          });
-      }
-
-      async uploadPhoto(req: Request, res: Response) {
-        const categoryId: number = +req.params?.cid;
-        const pageId: number = +req.params?.pid;
-        this.services.category.getById(categoryId, DefaultCategoryAdapterOptions)
-          .then(result => {
-            if (result === null) {
-              return res.status(404).send("Category not found!");
-            }
-            this.services.page.getById(pageId, {loadPhotos: false})
-              .then(async (result) => {
-                if (result === null) {
-                  return res.status(404).send("Page not found!");
-                }
-    
-                const uploadedFiles =  await this.doFileUpload(req, res);
-    
-                if (uploadedFiles === null) {
-                  return;
-                }
-                const photos = [];
-                for (let singleFile of uploadedFiles) {
-                  const fileName = basename(singleFile);
-                  if(fileName.length > 64){
-                    return res.status(400).send(`Photo ${fileName} must be no longer than 24 characters including spaces!`);
-                  }
-                  const photo = await this.services.photo.add({ name: fileName, file_path: singleFile, page_id: pageId }, {});
-    
-                  if (photo === null) {
-                    return res.status(500).send("Failed to add this photo into the database!");
-                  }
-                  photos.push(photo);
-                }
-    
-               return res.send(photos);
-              })
-              .catch(error => {
-                if (!res.headersSent) {
-                  return res.status(500).send(error?.message);
-                }
-              });
           })
           .catch(error => {
             return res.status(500).send(error?.message);

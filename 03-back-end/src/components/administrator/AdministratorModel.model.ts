@@ -6,8 +6,8 @@ export class AdministratorModel implements IModel {
     username: string;
     email: string;
     passwordHash: string;
-    passwordResetLink: string | null;
-    passwordResetCode: string | null;
+    passwordResetLink?: string;
+    passwordResetCode?: string;
     createdAt: string;
     isActive: boolean;
 

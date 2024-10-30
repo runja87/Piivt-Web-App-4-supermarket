@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { DefaultCategoryAdapterOptions } from './CategoryService.service';
-import { AddCategoryValidator } from '../category/dto/IAddCategory.dto';
+import { AddCategoryValidator, IAddCategory } from '../category/dto/IAddCategory.dto';
 import IAddCategoryDto from '../category/dto/IAddCategory.dto';
 import IEditCategoryDto, { EditCategoryValidator } from './dto/IEditCategory.dto';
 import BaseController from '../../common/BaseController';
-import CategoryModel from './CategoryModel.model';
+
 
 
 
@@ -52,7 +52,7 @@ class CategoryController extends BaseController {
       return res.status(500).send(error?.message);
     }
   }
-
+  
 
 
   async add(req: Request, res: Response) {
@@ -60,12 +60,23 @@ class CategoryController extends BaseController {
     if (!AddCategoryValidator(data)) {
       return res.status(400).send(AddCategoryValidator.errors);
     }
-    const category: CategoryModel = new CategoryModel();
-    if (category.categoryType.localeCompare(data.category_type)){
-      return res.status(409).json({ message: "Wrong category type!" });
+    
+    
+    const serviceData = await this.services.category.getById(data.parentCategoryId, DefaultCategoryAdapterOptions); 
+    const parentCategory = serviceData.categoryType ?? ''; 
+    const dataCategoryType = data.categoryType ?? '';
+    if(serviceData.categoryType !== "root"){
+    if (parentCategory.localeCompare(dataCategoryType) !== 0) {
+        return res.status(409).json({ message: "Wrong category type!" });
     }
+  }
+      const payload : any= {
+      name: data.name,
+      category_type: data.categoryType,
+      parent_id: data.parentCategoryId  
+  };
 
-    this.services.category.add({ name: (data as any).name, category_type: (data as any).categoryType, parent_id: (data as any).parentCategoryId }, DefaultCategoryAdapterOptions)
+    this.services.category.add(payload, DefaultCategoryAdapterOptions)
       .then(result => {
         return res.send(result);
       })
@@ -85,21 +96,20 @@ class CategoryController extends BaseController {
 
     try {
         const category = await this.services.category.getById(id, DefaultCategoryAdapterOptions);
-        
+        const parentCategory = await this.services.category.getById(category.parentCategoryId, DefaultCategoryAdapterOptions);
+
         if (category === null) {
             return res.status(404).send('Category not found.');
         }
-        if (category.name === (data.name)){
+        if (parentCategory.name === (data.name)){
           return res.status(409).json({ message: "A category with this name already exists." });
         }
-        if (category.categoryType.localeCompare === (data.category_type.localeCompare)){
-          return res.status(409).json({ message: "Wrong category type!" });
-        }
-
-        const editedCategory = await this.services.category.editById(id, {
-            name: (data as any).name,
-            category_type: (data as any).categoryType
-        }, DefaultCategoryAdapterOptions);
+      
+        const payload = {
+          name: data.name,
+          category_type: data.categoryType
+      }
+        const editedCategory = await this.services.category.editById(id, payload, DefaultCategoryAdapterOptions);
 
         return res.send(editedCategory);
 

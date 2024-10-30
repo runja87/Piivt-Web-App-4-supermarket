@@ -2,7 +2,7 @@ import Ajv from "ajv";
 import IServiceData from "../../../common/IServiceData.interface";
 const ajv = new Ajv();
 
-export interface IAddPageDto {
+export default interface IAddPageDto {
 
     title: string;
     content: string;
@@ -12,10 +12,7 @@ export interface IAddPageDto {
 
 }
 
-export default interface IAddPage extends IServiceData {
-    title: string;
-    content: string;
-    alt_text?: string;
+export interface IAddPage extends IServiceData {
     
 }
 
@@ -36,7 +33,7 @@ const AddPageValidator = ajv.compile({
         altText: {
             type: "string",
             maxLength: 128,
-            pattern: "^#[a-z]{5,}$",
+            pattern: "^(#([a-z]{5,128})(#[a-z]{5,128})*)?$",
             
           },
 

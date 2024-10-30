@@ -1,31 +1,18 @@
 import ICategory from "./ICategory.model";
 import IPhotoModel from "./IPhoto.model";
-enum Percentage {
-    NoSelection = '',
-    TenPercent = '0.1',
-    TwentyPercent = '0.2',
-    ThirtyPercent = '0.3',
-    FortyPercent = '0.4',
-    FiftyPercent = '0.5',
-    SixtyPercent = '0.6',
-    SeventyPercent = '0.7',
-    EightyPercent = '0.8',
-    NinetyPercent = '0.9',
-
-}
 
 export default interface IProduct {
 
     category: ICategory;
     productId: number;
     name: string;
-    altText: string | undefined;
+    altText?: string;
     description: string;
     price: number;
     sku: number;
     supply: number;
     isOnDiscount: number;
-    discount: Percentage | " ";
+    discount: string;
     createdAt: string;
     modifiedAt: string;
     isDeleted: boolean;

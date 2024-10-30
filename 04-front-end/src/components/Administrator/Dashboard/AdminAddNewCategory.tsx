@@ -12,7 +12,7 @@ interface IAddCategoryProps {
 interface ICategoryFormProps {
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
-  categoryType: any;
+  categoryType: string;
   setCategoryType: React.Dispatch<React.SetStateAction<any>>;
   parentCategoryId: number;
   setParentCategoryId: React.Dispatch<React.SetStateAction<number>>;
@@ -26,12 +26,16 @@ const AddNewCategory: React.FC<IAddCategoryProps> = ({
 }) => {
   const [name, setName] = useState<string>("");
   const [categoryType, setCategoryType] = useState<any>(category.categoryType);
-  const [parentCategoryId, setParentCategoryId] = useState<number>(
-    category.categoryId
-  );
+  const [,setErrorMessage ] = useState<any>();
+  var   [parentCategoryId, setParentCategoryId] = useState<number>(category.categoryId);
+  
+  if(categoryType === "root"){
+    parentCategoryId = 1;
+  }  
 
   const doAddCategory = () => {
-    api("post", "/api/category", { name, categoryType, parentCategoryId }).then(
+    api("post", "/api/category", {name, categoryType, parentCategoryId})
+    .then(
       (res) => {
         if (res.status !== "ok") {
           throw new Error("Could not add the category");
@@ -39,7 +43,11 @@ const AddNewCategory: React.FC<IAddCategoryProps> = ({
         loadCategories();
         handleClose();
       }
-    );
+      
+    )
+      .catch(error => {
+        setErrorMessage(error?.message ?? "Unknown error!");
+      })
   };
 
   return (
@@ -63,7 +71,7 @@ const AddNewCategory: React.FC<IAddCategoryProps> = ({
         </Button>
         {name.trim().length >= 4 && name.trim().length <= 64 ? (
           <Button variant="primary" onClick={doAddCategory}>
-            Save
+          Save
           </Button>
         ) : (
           ""

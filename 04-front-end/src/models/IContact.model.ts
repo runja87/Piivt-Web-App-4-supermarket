@@ -1,9 +1,4 @@
-import IModel from '../../common/IModel.interface';
-
-
-
-
-class ContacttModel implements IModel {
+export default interface IContact {
     messageId: number;
     firstName: string;
     lastName: string;
@@ -11,7 +6,4 @@ class ContacttModel implements IModel {
     title: string;
     message: string;
     createdAt: string;
-
 }
-
-export default ContacttModel;

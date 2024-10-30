@@ -7,14 +7,13 @@ enum CategoryType {
     News = "news",
     RootCategories = "root"
 }
-export interface IEditCategoryDto {
-    name: string;
-    categoryType: CategoryType;
+export default interface IEditCategoryDto {
+    name?: string;
+    categoryType?: CategoryType;
 }
 
-export default interface IEditCategory extends IServiceData {
-    name: string;
-    category_type: CategoryType;
+export interface IEditCategory extends IServiceData {
+
 }
 
 const EditCategoryValidator = ajv.compile({

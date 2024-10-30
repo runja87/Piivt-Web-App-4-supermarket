@@ -1,5 +1,5 @@
 import { Algorithm } from "jsonwebtoken"
-import IRouter from "./IRouter.interface"
+
 
 export interface IResize {
     

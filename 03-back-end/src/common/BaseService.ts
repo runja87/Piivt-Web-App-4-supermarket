@@ -55,8 +55,6 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
         );
 
 
-
-
     }
     public getById(id: number, options: AdapterOptions): Promise<ReturnModel | null> {
         const tableName = this.tableName();
@@ -81,7 +79,7 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
 
     }
 
-    protected async baseGetAllFromTableByFieldNameAndValue<OwnReturnType>(tableName: string, fieldName: string, value: any): Promise<OwnReturnType[]|null> {
+    protected async baseGetAllFromTableByFieldNameAndValue(tableName: string, fieldName: string, value: any): Promise<ReturnModel[]|null> {
         return new Promise((resolve, reject) => {
                 let sql = null;
                 if(tableName.includes("administrator")){
@@ -95,10 +93,10 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
                     if (rows === undefined) {
                         return resolve([]);
                     }
-                    const items: OwnReturnType[] = [];
+                    const items: ReturnModel[] = [];
 
                     for (const row of rows as mysql2.RowDataPacket[]) {
-                        items.push(row as OwnReturnType);
+                        items.push(row as ReturnModel);
                     }
 
                     return resolve(items);
@@ -109,6 +107,7 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
             }
         );
     }
+    
     
     protected async baseGetAllByFieldNameAndValue(fieldName: string, value: any, options: AdapterOptions): Promise<ReturnModel[]|null> {
         const tableName = this.tableName();
@@ -133,6 +132,24 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
             throw new Error(`Error fetching data: ${error.message}`);
         }
     }
+
+    protected async baseGetRelated(id: number, fieldName: string, options: AdapterOptions): Promise<ReturnModel[]> {
+        if(id === undefined){
+            return [];
+        }
+        const tableName = this.tableName();
+        const sql = `SELECT * FROM \`${tableName}\` WHERE \`${fieldName}\` = ? AND (is_deleted IS NULL OR is_deleted = 0) LIMIT 5;`;
+        const [rows]: any = await this.db.execute(sql, [id]);
+        if (rows === undefined) {
+          return [];
+      } 
+        const items: ReturnModel[] = [];
+          for (const row of rows as mysql2.RowDataPacket[]) {
+          items.push(await this.adaptToModel(row, options));
+                      }
+        return items;
+      }
+    
 
     
     protected async baseAdd(data: IServiceData, options: AdapterOptions): Promise<ReturnModel> {

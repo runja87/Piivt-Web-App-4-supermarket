@@ -1,0 +1,81 @@
+.navbar
+  background-color: #f8f9fa
+  padding: 1rem
+
+.navbar-brand
+  font-weight: bold
+  font-size: 1.5rem
+  color: #333
+
+.navbar-toggler
+  border: none
+  background-color: #555
+
+.navbar-nav
+  display: flex
+  justify-content: space-between
+  align-items: center
+
+.nav-link
+  color: #555
+  padding: 0.5rem 1rem
+  &:hover
+    background-color: #555
+    color: #fff
+    border-radius: 5px
+
+
+.dropdown-menu
+  background-color: #fff
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1)
+  padding: 0.5rem
+  margin-top: 0.5rem
+  border-radius: 4px
+  min-width: 200px  
+
+  .dropdown-item
+    padding: 0.5rem 1rem
+    color: #333
+    border-radius: 3px  
+    &:hover
+      background-color: #ffffff
+      color: #fff
+      transition: background-color 0.2s ease-in-out  
+
+
+.dropdown-submenu
+  position: relative
+
+  .dropdown-menu
+    top: 0
+    left: 100%
+    margin-top: -0.5rem
+    margin-left: 0.1rem
+    border: 1px solid #ddd
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1)
+
+  &:hover .dropdown-menu
+    display: block
+
+  .dropdown-item
+    padding: 0.5rem 1rem
+    white-space: nowrap
+
+
+.active
+  font-weight: bold
+  background-color: #e9ecef
+  border-radius: 5px
+
+
+@media (max-width: 768px)
+  .navbar-nav
+    flex-direction: column
+
+  .nav-link
+    padding: 1rem
+    text-align: center
+
+  .dropdown-menu
+    position: relative
+    box-shadow: none

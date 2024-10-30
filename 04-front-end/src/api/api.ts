@@ -1,4 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
+import IConfig from '../common/IConfig.interface';
+import DevConfig from '../configs';
+
 
 export type TApiMethod =  "get" | "post" | "put" | "delete";
 export type TApiResponce = "ok" | "error" | "login";
@@ -12,16 +15,17 @@ interface IApiArguments{
     method: TApiMethod, path: string, data: any | undefined, attempthToRefreshToken: boolean,
     
 }
+const config: IConfig = DevConfig;
 export function api(method: TApiMethod, path: string, data: any | undefined = undefined, attempthToRefreshToken: boolean = true):Promise<IApiResponse>{
    return new Promise(resolve => {
         axios({
             method: method,
-            baseURL: "http://localhost:10000",
+            baseURL: config.domain.name + ":" + config.domain.port,
             url: path,
-            data: data ? JSON.stringify(data) : undefined,
+            data: data,
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Berrer " + "TOKEN WILL GO HERE LATER",
+                "Authorization": config.authorization.token,
             },
         })
         .then(res => handleApiResponce(res, resolve))
@@ -30,16 +34,16 @@ export function api(method: TApiMethod, path: string, data: any | undefined = un
 
         });
    }; 
-   export function apiForm(method: TApiMethod, path: string, data: FormData, attempthToRefreshToken: boolean = true):Promise<IApiResponse>{
+   export function apiForm(method: TApiMethod, path: string, data: FormData | undefined, attempthToRefreshToken: boolean = true):Promise<IApiResponse>{
     return new Promise(resolve => {
          axios({
              method: method,
-             baseURL: "http://localhost:10000",
+             baseURL: config.domain.name + ":" + config.domain.port,
              url: path,
              data: data,
              headers: {
-                 "Content-Type": "application/json",
-                 "Authorization": "Berrer " + "TOKEN WILL GO HERE LATER",
+                 "Content-Type": "multipart/form-data",
+                 "Authorization": config.authorization.token,
              },
          })
          .then(res => handleApiResponce(res, resolve))
@@ -52,7 +56,7 @@ export function api(method: TApiMethod, path: string, data: any | undefined = un
    function handleApiError(err: any, resolve: (value: IApiResponse | PromiseLike<IApiResponse>) => void, args: IApiArguments){
     
         if(err?.response.status === 401 && args.attempthToRefreshToken){
-            const refreshedToken = "REFRESH TOKEN CALL LOGIN WILL GO HERE LATER"; //TOO
+            const refreshedToken = config.refresh.token; 
             if(refreshedToken){
                 api(args.method, args.path, args.data, args.attempthToRefreshToken)
                     .then(res => resolve(res))

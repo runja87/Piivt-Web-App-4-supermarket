@@ -1,0 +1,77 @@
+/* Table Styles */
+table
+  width: 100%
+  border-collapse: collapse
+  table-layout: auto  // Allow dynamic column widths
+
+  th, td
+    border: 1px solid #ddd
+    padding: 8px
+    text-align: left
+    overflow: hidden
+    text-overflow: ellipsis  // Handle overflow for cells
+
+  /* Fixed width for delete column */
+  .delete-column
+    width: 100px  // Adjust width as needed
+    text-align: center
+
+  /* Ensure other columns expand to fill available space */
+  td:not(.delete-column)
+    width: auto  // Allow columns to expand
+
+  /* Style for the message column to handle long text */
+  .message-column
+    max-width: 300px  // Set a max width as needed
+    white-space: normal  // Allow text to wrap
+    word-wrap: break-word  // Ensure long words wrap correctly
+    overflow: hidden
+    text-overflow: ellipsis
+
+  .btn
+    padding: 5px 10px
+    border: none
+    border-radius: 3px
+    cursor: pointer
+
+  .btn-danger
+    background-color: #d9534f
+    color: white
+
+  .btn-danger:hover
+    background-color: #c9302c
+
+  /* Responsive Design */
+  @media (max-width: 600px)
+    table
+      display: block
+      overflow-x: auto
+
+      thead
+        display: none
+
+      tr
+        display: block
+        margin-bottom: 0.625em
+
+      td
+        display: block
+        text-align: right
+        position: relative
+        padding-left: 50%
+        box-sizing: border-box  // Ensure padding doesn't cause overflow
+
+        &:before
+          content: attr(data-label)
+          position: absolute
+          left: 0
+          width: 50%
+          padding-left: 10px
+          font-weight: bold
+          text-align: left
+
+  /* Date Formatting */
+  .dateTime
+    font-style: italic
+    color: #555
+    font-size: 0.9rem

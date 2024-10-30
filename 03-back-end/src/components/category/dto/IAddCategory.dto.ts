@@ -4,20 +4,19 @@ const ajv = new Ajv();
 
 enum CategoryType {
     Products = "products",
-    News = "news"
+    News = "news",
+    Root = "root"
 }
-export interface IAddCategoryDto {
+export default interface IAddCategoryDto {
     name: string;
     categoryType: CategoryType;
-  
+    parentCategoryId: number;
+    
     
 }
 
-export default interface IAddCategory extends IServiceData {
-    name: string;
+export interface IAddCategory extends IServiceData {
     category_type: CategoryType;
-    parent_id: number;
-
 }
 
 const AddCategoryValidator = ajv.compile({
@@ -31,15 +30,19 @@ const AddCategoryValidator = ajv.compile({
 
         categoryType: {
             type: "string",
-            enum: ["product", "news"],
+            enum: ["product", "news", "root"]
         },
+        parentCategoryId: {
+            type: "number"
+        }
     },
     required: [
         "name",
         "categoryType",
+        "parentCategoryId"
     
     ],
-    additionalProperties: true,
+    additionalProperties: false,
 });
 
 

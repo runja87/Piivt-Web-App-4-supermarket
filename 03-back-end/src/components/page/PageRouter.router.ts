@@ -3,6 +3,7 @@ import IApplicationResources from "../../common/IApplicationResources.interface"
 import IRouter from '../../common/IRouter.interface';
 import PageController from "./PageController.controller";
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
+import PhotoController from '../photo/PhotoController.controller';
 
 
 class PageRouter implements IRouter{
@@ -14,8 +15,8 @@ class PageRouter implements IRouter{
         application.post("/api/page",                           AuthMiddleware.getVerified(),pageController.addPage.bind(pageController));
         application.put("/api/page/:pid",                       AuthMiddleware.getVerified(),pageController.editPage.bind(pageController));
         application.delete("/api/page/:pid",                    AuthMiddleware.getVerified(),pageController.deletePage.bind(pageController));
-        application.post("/api/page/:pid/photo",                AuthMiddleware.getVerified(),pageController.uploadPhoto.bind(pageController));
-           
+        application.post("/api/page/:pid/photo",                AuthMiddleware.getVerified(),pageController.uploadPagePhoto.bind(pageController));
+        application.put("/api/page/:pid/photo/:phid",           AuthMiddleware.getVerified(),pageController.editPagePhoto.bind(pageController));  
         
     }
 

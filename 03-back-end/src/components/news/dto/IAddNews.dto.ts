@@ -4,7 +4,7 @@ const ajv = new Ajv();
 
 
 
-export  interface IAddNewsDto {
+export default interface IAddNewsDto {
     title: string;
     content: string;
     altText?: string;
@@ -12,10 +12,7 @@ export  interface IAddNewsDto {
 }
 
 
-export default interface IAddNews extends IServiceData {
-    title: string;
-    content: string;
-    alt_text?: string | null;
+export interface IAddNews extends IServiceData {
     category_id: number;
 }
 
@@ -37,7 +34,8 @@ const AddNewsValidator = ajv.compile({
         altText: {
             type: "string",
             maxLength: 128,
-            pattern: "^#([a-z]{5,})(?=(#|$))|^$",
+            default: null,
+            pattern: "^(#([a-z]{5,128})(#[a-z]{5,128})*)?$",
         },
 
     },
@@ -45,7 +43,7 @@ const AddNewsValidator = ajv.compile({
         "title",
         "content",
     ],
-    additionalProperties: true,
+    additionalProperties: false,
 });
 
 export { AddNewsValidator };

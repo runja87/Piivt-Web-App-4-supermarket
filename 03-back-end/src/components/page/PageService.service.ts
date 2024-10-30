@@ -1,8 +1,8 @@
 import BaseService from "../../common/BaseService";
 import IAdapterOptions from '../../common/IAdapterOptions.interface';
+import IServiceData from "../../common/IServiceData.interface";
 import PageModel from "./PageModel.model";
-import IAddPage from "./dto/IAddPage.dto";
-import IEditPage from "./dto/IEditPage.dto";
+
 
 
 
@@ -39,11 +39,11 @@ class PageService extends BaseService<PageModel, IPageAdapterOptions> {
     }
 
     
-    public async add(data: IAddPage): Promise<PageModel> {
+    public async add(data: IServiceData): Promise<PageModel> {
         return this.baseAdd(data, DefaultPageAdapterOptions);
     }
 
-    public async editById(pageId: number, data: IEditPage): Promise<PageModel> {
+    public async editById(pageId: number, data: IServiceData): Promise<PageModel> {
         return this.baseEditById(pageId, data, DefaultPageAdapterOptions);
     }
 

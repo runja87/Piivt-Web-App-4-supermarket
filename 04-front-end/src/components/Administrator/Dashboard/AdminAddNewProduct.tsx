@@ -18,7 +18,7 @@ interface IProductFormProps {
   setName: React.Dispatch<React.SetStateAction<string>>;
   description: string;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
-  alt: string;
+  altText: string;
   setAlt: React.Dispatch<React.SetStateAction<string>>;
   price: number;
   setPrice: React.Dispatch<React.SetStateAction<number>>;
@@ -39,16 +39,25 @@ const AddNewProduct: React.FC<IAddProductProps> = ({
   const [, setErrorMessage ] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [alt, setAlt] = useState<string>("");
+  const [altText, setAlt] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [supply, setSupply] = useState<number>(0);
   const [sku, setSku] = useState<number>(0);
   const [file, setFile] = useState<File>();
   const navigate = useNavigate();
 
+  const payload = {
+    name,
+    description,
+    price,
+    supply,
+    sku,
+    altText: altText || "#enteralt"
+};
 
+console.log(payload);
   const doAddProduct = () => {
-    api("post", "/api/category/" + category.categoryId + "/product", { name, description, price, sku, supply })
+    api("post", "/api/category/" + category.categoryId + "/product",payload)
     .then(res => {
         if (res.status !== "ok") {
           throw new Error("Could not add this product!");
@@ -74,7 +83,7 @@ const AddNewProduct: React.FC<IAddProductProps> = ({
       .then(({file, product}) => {
         const data = new FormData();
         data.append("photo", file)
-       return apiForm("post", "/api/category/"+ category.categoryId + "/product/" + product[0].productId + "/photo", data)
+       return apiForm("post", "/api/category/"+ category.categoryId + "/product/" + product?.productId + "/photo", data)
        .then(res => {
         if (res.status !== "ok") {
           throw new Error("Could not upload photo! Reason: " + res?.data?.map((error: any) => error?.instancePath + " " + error?.message).join(", "));
@@ -82,14 +91,15 @@ const AddNewProduct: React.FC<IAddProductProps> = ({
         return res.data;
        })
       })
-      .then(photo => {
+      .then(() => {
         navigate("/admin/dashboard/category/" + category.categoryId + "/product/list", {replace: true,});
+        loadProducts(category.categoryId);
+        handleClose();
       })
       .catch(error => {
         setErrorMessage(error?.message ?? "Unknown error!");
       })
-      loadProducts(category.categoryId);
-      handleClose();
+
 
   };
 
@@ -104,7 +114,7 @@ const AddNewProduct: React.FC<IAddProductProps> = ({
           setName={setName}
           description={description}
           setDescription={setDescription}    
-          alt={alt}
+          altText={altText}
           setAlt={setAlt}
           price={price}
           setPrice= {setPrice}
@@ -137,7 +147,7 @@ const CategoryForm: React.FC<IProductFormProps> = ({
   setName,
   description,
   setDescription,
-  alt,
+  altText,
   setAlt,
   price,
   setPrice,
@@ -145,9 +155,7 @@ const CategoryForm: React.FC<IProductFormProps> = ({
   setSupply,
   sku,
   setSku,
-  file,
   setFile,
-  
 }) => (
   <>
     <div className="form-group col-md-6">
@@ -172,14 +180,17 @@ const CategoryForm: React.FC<IProductFormProps> = ({
       <input
         type="text"
         className="form-control"
-        value={alt}
+        value={altText}
         onChange={(e) => setAlt(e.target.value)}
       />
     </div>
-    <div className="form-group col-md-2">
+    <div className="form-group col-md-3">
       <label>Price:</label>
       <input
-        type="text"
+        type="number"
+        min="0.00"
+        step="0.01"
+        onInput={(e) => e.preventDefault()}
         className="form-control"
         value={price}
         onChange={(e) => setPrice(+e.target.value)}
@@ -188,16 +199,16 @@ const CategoryForm: React.FC<IProductFormProps> = ({
     <div className="form-group col-md-4">
       <label>Sku:</label>
       <input
-        type="text"
+        type="number"
         className="form-control"
         value={sku}
         onChange={(e) => setSku(+e.target.value)}
       />
     </div>
-    <div className="form-group col-md-2">
+    <div className="form-group col-md-3">
       <label>Supply:</label>
       <input
-        type="text"
+        type="number"
         className="form-control"
         value={supply}
         onChange={(e) => setSupply(+e.target.value)}

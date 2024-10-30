@@ -2,11 +2,11 @@ import Ajv from "ajv";
 import IServiceData from "../../../common/IServiceData.interface";
 const ajv = new Ajv();
 
-export interface IAddProductDto {
+export default interface IAddProductDto {
 
     name: string;
     description: string;
-    altText?: string | null;
+    altText?: string;
     price: number;
     sku: number;
     supply: number;
@@ -14,13 +14,7 @@ export interface IAddProductDto {
 
 }
 
-export default interface IAddProduct extends IServiceData {
-    name: string;
-    description: string;
-    alt_text?: string | null;
-    price: number;
-    sku: number;
-    supply: number;
+export interface IAddProduct extends IServiceData {
     category_id: number;
     
 }
@@ -46,10 +40,9 @@ const AddProductValidator = ajv.compile({
 
         },
         sku: {
-            type: 'integer',
-            minimum: 100000000000,  
-            maximum: 999999999999 
-           
+            type: 'number',
+            minimum: 1000000000,
+            maximum: 9999999999,
         },
         supply: {
             type: "number",
@@ -60,7 +53,7 @@ const AddProductValidator = ajv.compile({
             type: "string",
             maxLength: 128,
             default: null,
-            pattern: "^#[a-z]{5,}$",
+            pattern: "^(#([a-z]{5,128})(#[a-z]{5,128})*)?$",
           },
 
     },
