@@ -12,7 +12,7 @@ interface IAddCategoryProps {
 interface ICategoryFormProps {
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
-  categoryType: any;
+  categoryType: string;
   setCategoryType: React.Dispatch<React.SetStateAction<any>>;
   parentCategoryId: number;
   setParentCategoryId: React.Dispatch<React.SetStateAction<number>>;
@@ -27,11 +27,14 @@ const AddNewCategory: React.FC<IAddCategoryProps> = ({
   const [name, setName] = useState<string>("");
   const [categoryType, setCategoryType] = useState<any>(category.categoryType);
   const [,setErrorMessage ] = useState<any>();
-  const [parentCategoryId, setParentCategoryId] = useState<number>(category.categoryId);
+  var   [parentCategoryId, setParentCategoryId] = useState<number>(category.categoryId);
   
+  if(categoryType === "root"){
+    parentCategoryId = 1;
+  }  
 
   const doAddCategory = () => {
-    api("post", "/api/category", {name,categoryType,parentCategoryId })
+    api("post", "/api/category", {name, categoryType, parentCategoryId})
     .then(
       (res) => {
         if (res.status !== "ok") {
