@@ -5,6 +5,9 @@ import { DefaultCategoryAdapterOptions } from '../category/CategoryService.servi
 import { DefaultNewsAdapterOptions } from '../news/NewsService.service';
 import IEditNewsDto, { EditNewsValidator } from './dto/IEditNews.dto';
 import { basename } from "path";
+import PhotoModel from '../photo/PhotoModel.model';
+import { IEditPhoto } from '../photo/dto/IEditPhoto.dto';
+import IAddPhoto from '../photo/dto/IAddPhoto.dto';
 
 export class NewsController extends BaseController {
 
@@ -85,8 +88,13 @@ export class NewsController extends BaseController {
       if (category.categoryType !== 'news') {
         return res.status(400).send('Adding in wrong category!');
       }
+      if (category.news.find(news => news.title.trim().toLowerCase() === data.title.trim().toLowerCase())) {
+        return res.status(400).send('There is already same news title in this category!');
+      }
 
-      const addedNews = await this.services.news.add({ title: (data as any).title, content: (data as any).content, alt_text: (data as any).altText || null, category_id: categoryId }, DefaultNewsAdapterOptions);
+     const payload = { title: data.title, content: data.content, alt_text: data?.altText ,category_id: categoryId };
+
+      const addedNews = await this.services.news.add( payload, DefaultNewsAdapterOptions);
       return res.send(addedNews);
     } catch (error) {
       return res.status(500).send(error?.message);
@@ -112,13 +120,12 @@ export class NewsController extends BaseController {
             if (result === null) {
               return res.status(404).send('News not found!');
             }
-            if (result.title === data.title) {
-              return res.status(400).send('Same title already exists in this category!');
-            }
+           
             if (result.categoryId !== categoryId) {
               return res.status(400).send('This news does not belong to this category!');
             }
-            this.services.news.editById(newsId, { title: (data as any)?.title, content: (data as any)?.content, is_deleted: (data as any)?.isDeleted }, DefaultNewsAdapterOptions)
+            const payload = { title: data?.title, content: data?.content, alt_text: data?.altText }
+            this.services.news.editById(newsId, payload, DefaultNewsAdapterOptions)
               .then(result => {
                 return res.send(result);
               })
@@ -131,6 +138,42 @@ export class NewsController extends BaseController {
         return res.status(500).send(error?.message);
       });
 
+  }
+
+  async editNewsPhoto(req: Request, res: Response) {
+    try {
+      const photoId: number = +req.params?.phid;
+      const newsId: number = +req.params?.nid;
+      
+      const existingPhotos = await this.services.photo.getAllByNewsId(newsId, {});
+      const specificPhoto = existingPhotos.find((photo) => photo.photoId === photoId);
+
+      if (!specificPhoto || specificPhoto.isDeleted ) {
+        return res.status(404).send('Photo for the these news is not found or it has been deleted!');
+       
+      }
+        const uploadedFiles = await this.doFileUpload(req, res);
+        let photo = null;
+        const photos : PhotoModel[]= [];
+        for (let singleFile of uploadedFiles) {
+          const fileName = basename(singleFile);
+    
+          if (fileName.length > 64) {
+            return res.status(400).send(`Photo ${fileName} must be no longer than 64 characters including spaces!`);
+          }
+          let data: IEditPhoto = {name: fileName, file_path: singleFile};
+          photo = await this.services.photo.editById(photoId, data);
+         
+          if (!photo) {
+            return res.status(500).send("Failed to replace the photo in the database!");
+          }
+          photos.push(photo);
+          
+        }
+        return res.send(photos);
+    } catch (error) {
+      return res.status(500).send(error?.message || 'An unexpected error occurred.');
+    }
   }
 
 
@@ -187,13 +230,14 @@ export class NewsController extends BaseController {
             if (uploadedFiles === null) {
               return;
             }
-            const photos = [];
+            const photos: PhotoModel[] = [];
             for (let singleFile of uploadedFiles) {
               const fileName = basename(singleFile);
               if(fileName.length > 64){
                 return res.status(400).send(`Photo ${fileName} must be no longer than 24 characters including spaces!`);
               }
-              const photo = await this.services.photo.add({ name: fileName, file_path: singleFile, news_id: newsId }, {});
+              const data: IAddPhoto = { name: fileName, file_path: singleFile, news_id: newsId };
+              const photo = await this.services.photo.add(data, {});
 
               if (photo === null) {
                 return res.status(500).send("Failed to add this photo into the database!");
