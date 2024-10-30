@@ -2,22 +2,16 @@ import Ajv from "ajv";
 import IServiceData from "../../../common/IServiceData.interface";
 const ajv = new Ajv();
 
-export interface IEditPageDto {
+export default  interface IEditPageDto {
 
-    title: string;
-    content: string;
-    altText?: string;
-    isDeleted?: boolean;
-    
+    title?: string;
+    content?: string;
+    altText: string;
    
-
 }
 
-export default interface IEditPage extends IServiceData {
-    title: string;
-    content: string;
-    alt_text?: string;
-    is_deleted?: number;
+export interface IEditPage extends IServiceData {
+  
     
 }
 
@@ -38,18 +32,11 @@ const EditPageValidator = ajv.compile({
         altText: {
             type: "string",
             maxLength: 128,
-            pattern: "^#[a-z]{5,}$",
-          },
-          isDeleted:
-          {
-            type: "boolean",
-           
-          },
-
+            pattern: "^(#([a-z]{5,128})(#[a-z]{5,128})*)?$",
+          }
     },
     required: [
-        "title",
-        "content", 
+        "altText",
     ],
 
     additionalProperties: false,
