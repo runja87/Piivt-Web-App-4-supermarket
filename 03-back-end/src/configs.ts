@@ -1,9 +1,9 @@
 import { toASCII } from "punycode";
 import IConfig from "./common/IConfig.interface";
-//import { MailConfigurationParametars } from "./config.mail";
 import { readFileSync } from "fs";
 
 const DevConfig: IConfig = {
+
     server: {
         port: 10000,
         static: {
@@ -80,14 +80,14 @@ const DevConfig: IConfig = {
             issuer: "Piivt",
             tokens: {
                 auth: {
-                    duration: 60 * 60 * 24, // For dev 24h, otherwise couple min.
+                    duration: 60 * 3, // For dev 24h, otherwise couple min.
                     keys: {
                         public: readFileSync("./.keystore/app.public","ascii"),
                         private: readFileSync("./.keystore/app.private","ascii"),
                     },
                 },
                 refresh: {
-                    duration: 60 * 60 * 24, // For dev 60 days, otherwise around month.
+                    duration: 60 * 60 * 24 * 30, // For dev 60 days, otherwise around month.
                     keys: {
                         public: readFileSync("./.keystore/app.public","ascii"),
                         private: readFileSync("./.keystore/app.private","ascii"),
@@ -95,10 +95,9 @@ const DevConfig: IConfig = {
                 },
             },
         },
-        allowAllRoutesWithoutAuthTokens: true, // TRUE Samo dok traje razvoj front-end bez mogucnosti prijave
+        allowAllRoutesWithoutAuthTokens: false, // TRUE Samo dok traje razvoj front-end bez mogucnosti prijave
     },
  
 };
-//DevConfig.mail = MailConfigurationParametars;
 
 export default DevConfig;
