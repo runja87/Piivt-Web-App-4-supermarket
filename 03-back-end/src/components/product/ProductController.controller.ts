@@ -5,6 +5,12 @@ import { DefaultCategoryAdapterOptions } from "../category/CategoryService.servi
 import { DefaultProductAdapterOptions } from '../product/ProductService.service';
 import IEditProductDto, { EditProductValidator } from "./dto/IEditProduct.dto";
 import { basename } from "path";
+import { ISearchProductDto, SearchProductValidator } from "./dto/ISearchProduct.dto";
+import PhotoModel from "../photo/PhotoModel.model";
+import { IEditPhoto } from "../photo/dto/IEditPhoto.dto";
+import IPhoto from '../../../../04-front-end/src/models/IPhoto.model';
+import IAddPhoto from "../photo/dto/IAddPhoto.dto";
+
 
 class ProductController extends BaseController {
 
@@ -34,6 +40,34 @@ class ProductController extends BaseController {
         });
     }
 
+    async getBySearchParams(req: Request, res: Response) {
+      const { search, category, minPrice, maxPrice }: ISearchProductDto = req.query;
+      if (!SearchProductValidator({ search, category, minPrice, maxPrice })) {
+        return res.status(400).send(SearchProductValidator.errors);
+      }
+    
+      try {
+        const products = await this.services.product.getBySearchParams({
+          search: search as string,
+          category: category as string,
+          minPrice: minPrice ? +minPrice : null,
+          maxPrice: maxPrice ? +maxPrice : null,
+        }, {loadCategory: true, loadPhotos: true });
+    
+        if (!products.length) {
+          return res.status(404).send({ message: 'No products found' });
+        }
+     
+        var relatedProducts = await this.services.product.getRelated(Number(category), "category_id",{loadCategory: true, loadPhotos: true }); 
+        if(search === ""){
+          relatedProducts = [];
+        }
+        
+        return res.send({ products, relatedProducts});
+      } catch (error) {
+        return res.status(500).send(error?.message);
+      }
+    }
 
 
 
@@ -74,7 +108,8 @@ class ProductController extends BaseController {
           return res.status(400).send(AddProductValidator.errors);
         }
         try {
-          const category = await this.services.category.getById(categoryId, DefaultCategoryAdapterOptions);
+          const category = await this.services.category.getById(categoryId, { loadNews: false,
+            loadProducts: true});
     
           if (category === null) {
             return res.status(404).send('Category not found.');
@@ -82,16 +117,21 @@ class ProductController extends BaseController {
           if (category.categoryType !== 'product') {
             return res.status(400).send('Adding in wrong category!');
           }
+
+          if (category.products.find(product => product.name.trim().toLowerCase() === data.name.trim().toLowerCase())) {
+            return res.status(400).send('There is already same product name in this category!');
+          }
+           
           const productData = {
-            name: (data as any).name,
-            description: (data as any).description,
-            alt_text: (data as any).altText || null,
-            price: (data as any).price,
-            sku: (data as any).sku,
-            supply: (data as any).supply,
+            name: data.name,
+            description: data.description,
+            alt_text: data.altText,
+            price: data.price,
+            sku: data.sku,
+            supply: data.supply,
             category_id: categoryId
           };
-          const addedProduct = await this.services.product.add(productData, {loadCategory: false, loadPhotos: false});
+          const addedProduct = await this.services.product.add(productData, DefaultProductAdapterOptions);
           return res.send(addedProduct);
         } catch (error) {
           return res.status(500).send(error?.message);
@@ -112,7 +152,7 @@ class ProductController extends BaseController {
               return res.status(404).send('Category not found!');
             }
     
-            this.services.product.getById(productId, {loadCategory: false, loadPhotos: false})
+            this.services.product.getById(productId, DefaultProductAdapterOptions)
               .then(result => {
                 if (result === null) {
                   return res.status(404).send('Product not found!');
@@ -120,23 +160,19 @@ class ProductController extends BaseController {
                 if (result.categoryId !== categoryId) {
                     return res.status(400).send('This product does not belong to this category!');
                   }
-                if (result.name === data.name) {
-                  return res.status(400).send('There is already same title in this category!');
-                }
-              
+             
                 const productData = {
-                  name: (data as any).name,
-                  description: (data as any).description,
-                  alt_text: (data as any).altText || null,
-                  price: (data as any).price,
-                  sku: (data as any).sku,
-                  supply: (data as any).supply,
-                  discount: (data as any).discount || null,
-                  is_on_discount: (data as any).isOnDiscount || 0,
-                  category_id: categoryId
+                  name: data.name,
+                  description: data.description,
+                  alt_text: data?.altText,
+                  price: data.price,
+                  sku: data.sku,
+                  supply: data.supply,
+                  discount: data?.discount || "0.1",
+                  is_on_discount: data?.isOnDiscount || 0
                 };
     
-                this.services.product.editById(productId, productData, {loadCategory: false, loadPhotos: false})
+                this.services.product.editById(productId, productData, DefaultProductAdapterOptions)
                   .then(result => {
                     return res.send(result);
                   })
@@ -153,12 +189,48 @@ class ProductController extends BaseController {
     
     
       }
+
+      async editProductPhoto(req: Request, res: Response) {
+        try {
+          const photoId: number = +req.params?.phid;
+          const productId: number = +req.params?.pid;
+      
+          const existingPhotos = await this.services.photo.getAllByProductId(productId, {});
+          const specificPhoto = existingPhotos.find((photo) => photo.photoId === photoId);
+
+          if (!specificPhoto || specificPhoto.isDeleted ) {
+            return res.status(404).send('Photo for this product is not found or it has been deleted!');
+          }
+            const uploadedFiles = await this.doFileUpload(req, res);
+            let photo = null;
+            let photos: PhotoModel[] = [];
+            for (let singleFile of uploadedFiles) {
+              const fileName = basename(singleFile);
+        
+              if (fileName.length > 64) {
+                return res.status(400).send(`Photo ${fileName} must be no longer than 64 characters including spaces!`);
+              }
+              const payload: IEditPhoto = {name: fileName, file_path: singleFile};
+              photo = await this.services.photo.editById(photoId, payload);
+             
+              if (!photo) {
+                return res.status(500).send("Failed to replace the photo in the database!");
+              }
+              photos.push(photo);
+              
+            }
+            return res.send(photos);
+        } catch (error) {
+          return res.status(500).send(error?.message || 'An unexpected error occurred.');
+        }
+      }
+    
     
     
       async deleteProduct(req: Request, res: Response) {
         const categoryId: number = +req.params?.cid;
         const productId: number = +req.params?.pid;
-        this.services.product.getById(productId, {loadCategory: false,loadPhotos: false})
+        this.services.product.getById(productId, DefaultProductAdapterOptions)
           .then(async result => {
             if (result === null) {
               return res.status(404).send('Product not found or is as marked deleted!');
@@ -176,7 +248,7 @@ class ProductController extends BaseController {
             }
 
             this.services.product.deleteById(productId)
-              .then(result => {
+              .then(()=> {
                 return res.send('This product has been deleted!');
               })
               .catch(error => {
@@ -198,7 +270,7 @@ class ProductController extends BaseController {
               return res.status(404).send("Category not found!");
             }
          
-            this.services.product.getById(productId, {loadCategory: false, loadPhotos: false})
+            this.services.product.getById(productId, DefaultProductAdapterOptions)
               .then(async (result) => {
                 if (result === null) {
                   return res.status(404).send("Product not found!");
@@ -213,13 +285,14 @@ class ProductController extends BaseController {
                 if (uploadedFiles === null) {
                   return;
                 }
-                const photos = [];
+                const photos: PhotoModel[]= [];
                 for (let singleFile of uploadedFiles) {
                   const fileName = basename(singleFile);
                   if(fileName.length > 64){
                     return res.status(400).send(`Photo ${fileName} must be no longer than 24 characters including spaces!`);
                   }
-                  const photo = await this.services.photo.add({ name: fileName, file_path: singleFile, product_id: productId }, {});
+                  const payload: IAddPhoto = { name: fileName, file_path: singleFile, product_id: productId };
+                  const photo: PhotoModel = await this.services.photo.add(payload);
     
                   if (photo === null) {
                     return res.status(500).send("Failed to add this photo into the database!");

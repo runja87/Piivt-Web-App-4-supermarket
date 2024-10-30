@@ -1,41 +1,21 @@
 import Ajv from "ajv";
 import IServiceData from "../../../common/IServiceData.interface";
 const ajv = new Ajv();
-enum Percentage {
-    TenPercent = 0.1,
-    TwentyPercent = 0.2,
-    ThirtyPercent = 0.3,
-    FortyPercent = 0.4,
-    FiftyPercent = 0.5,
-    SixtyPercent = 0.6,
-    SeventyPercent = 0.7,
-    EightyPercent = 0.8,
-    NinetyPercent = 0.9,
 
-}
-
-export interface IEditProductDto {
+export default interface IEditProductDto {
     name?: string;
     description?: string;
     altText?: string;
     price?: number;
     sku?: number;
     supply?: number;
-    discount?: Percentage;
+    discount?: string;
     isOnDiscount?: number;
 }
 
 
-export default interface IEditProduct extends IServiceData {
-    name?: string;
-    description?: string;
-    alt_text?: string;
-    price?: number;
-    sku?: number;
-    supply?: number;
-    discount?: Percentage;
-    is_on_discount?: number;
-    category_id: number;
+export interface IEditProduct extends IServiceData {
+   
 
 }
 
@@ -48,16 +28,15 @@ const EditProductValidator = ajv.compile({
             minLength: 4,
             maxLength: 64,
         },
-        description: {
+            description: {
             type: "string",
-            minLength: 50,
+            minLength: 5,
             maxLength: 500,
         },
         discount:
         {
-            type: "number",
-            default: null,
-
+             type: "string",
+             
         },
         isOnDiscount:
         {
@@ -69,8 +48,8 @@ const EditProductValidator = ajv.compile({
         {
             type: "string",
             maxLength: 128,
-            default: null,
-            pattern: "^#[a-z]{5,}$",
+            pattern: "^(#([a-z]{5,128})(#[a-z]{5,128})*)?$",
+
         },
         price:
         {
@@ -80,23 +59,19 @@ const EditProductValidator = ajv.compile({
         },
         sku:
         {
-            type: 'integer',
-            minimum: 100000000000,  
-            maximum: 999999999999 
+            type: 'number',
+            minimum: 1000000000,
+            maximum: 9999999999,
             
         },
         supply:
         {
             type: "number",
         },
-        isDeleted:
-        {
-            type: "boolean",
-        }
+     
 
     },
-    required: [
-       
+    required: [   
     ],
 
     additionalProperties: false,
