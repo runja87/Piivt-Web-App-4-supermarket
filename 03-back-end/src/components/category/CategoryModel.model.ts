@@ -7,15 +7,16 @@ enum CategoryType {
   News = "news"
 }
 class CategoryModel implements IModel {
-    categoryId: number;
-    name: string;
-    categoryType: CategoryType;
-    isDeleted: boolean;
-    parentCategoryId: number;
+    categoryId?: number;
+    name?: string;
+    categoryType?: CategoryType;
+    isDeleted?: boolean;
+    parentCategoryId?: number;
     
     threeLevelStructure?: CategoryModel[] = [];
     news?: NewsModel[] = [];
     products?: ProductModel[] = [];
+    
   
 }
 

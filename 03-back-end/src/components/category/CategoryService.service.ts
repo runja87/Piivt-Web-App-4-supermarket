@@ -44,9 +44,6 @@ class CategoryService extends BaseService<CategoryModel, ICategoryAdapterOptions
 
         return category;
     }
-    public async getAllById(categoryid: number, options: ICategoryAdapterOptions):Promise<CategoryModel[]> {
-      return this.baseGetAllByFieldNameAndValue('category_id', categoryid, options);
-    }
 
     public async add(data: IAddCategory, options: ICategoryAdapterOptions): Promise<CategoryModel> {
         return this.baseAdd(data, options);
