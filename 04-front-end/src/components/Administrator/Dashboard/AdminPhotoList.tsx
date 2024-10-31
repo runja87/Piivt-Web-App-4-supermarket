@@ -4,6 +4,8 @@ import { Button, Modal } from "react-bootstrap";
 import IPhoto from "../../../models/IPhoto.model";
 import { Link, useNavigate } from "react-router-dom";
 import AdminAddNewPhoto from "./AdminAddNewPhoto";
+import IConfig from "../../../common/IConfig.interface";
+import DevConfig from "../../../configs";
 
 interface IAdminPhotosListRowProperties {
   photo: IPhoto;
@@ -21,6 +23,7 @@ export default function AdminPhotosList() {
   const [photos, setPhotoData] = useState<IPhoto[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showAddPhoto, setShowAddPhoto] = useState(false);
+  const config: IConfig = DevConfig;
 
 
   const loadPhotos = useCallback(() => {
@@ -114,18 +117,17 @@ export default function AdminPhotosList() {
           setErrorMessage(error?.message ?? "Unknown error!");
         });
     };
+
     const doEditPhoto = async () => {
       try {
-        const payload = { altText: altText || "#enteralt" };
-  
-        const updateRes = await api("put", `/api/photo/${props.photo.photoId}`, payload);
+        const updateRes = await api("put", `/api/photo/${props.photo.photoId}`, { altText });
         if (updateRes.status !== "ok") {
           throw new Error("Could not edit this photo!");
         }
   
         if (file) {
           const data = new FormData();
-          data.append("photo", file);
+          data.append("name", file);
   
           const uploadRes = await apiForm("put", `/api/photo/${props.photo.photoId}`, data);
           if (uploadRes.status !== "ok") {
@@ -148,7 +150,7 @@ export default function AdminPhotosList() {
         {!props.photo.newsId || !props.photo.productId || !props.photo.pageId ? (
           <img
             alt={props.photo.altText}
-            src={`http://localhost:10000/assets/${props.photo.filePath.replace(props.photo.name, "small-" + props.photo.name)}`}
+            src={`${config.domain.name}:${config.domain.port}/assets/${props.photo.filePath.replace(props.photo.name, "small-" + props.photo.name)}`}
           />
         ) : (
           <p>No image</p>
@@ -160,7 +162,7 @@ export default function AdminPhotosList() {
               className="form-control form-control-sm "
               type="text"
               onChange={(e) => setAlt(e.target.value)}
-              value={altText || ""}
+              value={altText !== null ? altText : ""}
             />
           </div>
         </td>
