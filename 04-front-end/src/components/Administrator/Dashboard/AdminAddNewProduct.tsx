@@ -52,10 +52,9 @@ const AddNewProduct: React.FC<IAddProductProps> = ({
     price,
     supply,
     sku,
-    altText: altText || "#enteralt"
+    altText
 };
 
-console.log(payload);
   const doAddProduct = () => {
     api("post", "/api/category/" + category.categoryId + "/product",payload)
     .then(res => {
@@ -72,6 +71,8 @@ console.log(payload);
       })
       .then(product => {
         if(!file){
+          loadProducts(category.categoryId);
+          handleClose();
           throw new Error("No product photo selected!");
         }
         return {
@@ -130,7 +131,7 @@ console.log(payload);
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        {name.trim().length >= 4 && name.trim().length <= 64 ? (
+        {name.trim().length >= 4 && name.trim().length <= 64 && description.trim().length >= 50 && description.trim().length <= 500 && file !== undefined ? (
           <Button variant="primary" onClick={doAddProduct}>
             Save
           </Button>
