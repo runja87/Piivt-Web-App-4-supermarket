@@ -4,6 +4,12 @@ const DevConfig: IConfig = {
         name: "http://localhost",
         port: 10000
     },
+    authorization: {
+        token: "Berrer TOKEN WILL GO HERE LATER"
+    },
+    refresh: {
+        token: "REFRESH TOKEN CALL LOGIN WILL GO HERE LATER"
+    }
 
 }
 
