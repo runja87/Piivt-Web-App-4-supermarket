@@ -1,63 +1,45 @@
 import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
-    return(
-<div className="row">
-
-        <div className="col-12 col-md-4 p-3 ">
-            <div className="card">
-                <div className="card-title">Categories</div>
-                    <div className="card-text d-grid gap-3">
-                    <Link className="btn btn-dark" to="/admin/dashboard/category/list">List all categories</Link>
-                    </div>
+  return (
+    <div className="container-fluid">
+      <div className="row">
+        {/* Using two columns for layout */}
+        {[
+          { title: "Categories", link: "/admin/dashboard/category/list" },
+          { title: "Pages", link: "/admin/dashboard/pages/list" },
+          { title: "Gallery", link: "/admin/dashboard/gallery/list" },
+          { title: "Messages", link: "/admin/dashboard/messages/list" },
+          {
+            title: "Administrators",
+            links: [
+              { link: "/admin/dashboard/administrator/list", label: "List all administrators" },
+              { link: "/admin/dashboard/administrator/add", label: "Add new administrator" },
+            ],
+          },
+        ].map((item, index) => (
+          <div key={index} className="col-12 col-md-6 p-3"> {/* Changed to col-md-6 for two columns */}
+            <div className="card shadow-sm border-dark">
+              <div className="card-header bg-dark text-white"> {/* Changed to black background */}
+                <h5 className="mb-0">{item.title}</h5>
+              </div>
+              <div className="card-body d-grid gap-3">
+                {item.links ? (
+                  item.links.map((subItem, subIndex) => (
+                    <Link key={subIndex} className="btn btn-secondary" to={subItem.link}>
+                      {subItem.label}
+                    </Link>
+                  ))
+                ) : (
+                  <Link className="btn btn-secondary" to={item.link}>
+                    List all {item.title.toLowerCase()}
+                  </Link>
+                )}
+              </div>
             </div>
-        </div>
-
-
-
-        <div className="col-12 col-md-4 p-3 ">
-            <div className="card">
-                <div className="card-title">Pages</div>
-                    <div className="card-text d-grid gap-3">
-                    <Link className="btn btn-primary" to="/admin/dashboard/page/list">List all pages</Link>
-                    </div>
-            </div>
-        </div>
-
-        <div className="col-12 col-md-4 p-3 ">
-            <div className="card">
-                <div className="card-title">Gallery</div>
-                    <div className="card-text d-grid gap-3">
-                    <Link className="btn btn-primary" to="/admin/dashboard/gallery/list">List all photos</Link>
-                     </div>
-            </div>
-        </div>
-
-
-
-        <div className="col-12 col-md-4 p-3 ">
-            <div className="card">
-                <div className="card-title">Messages</div>
-                    <div className="card-text d-grid gap-3">
-                    <Link className="btn btn-primary" to="/admin/dashboard/messages/list">List all messages</Link>
-                     </div>
-            </div>
-        </div>
-
-
-        <div className="col-12 col-md-4 p-3 ">
-            <div className="card">
-                <div className="card-title">Administrators</div>
-                    <div className="card-text d-grid gap-3">
-                    <Link className="btn btn-primary" to="/admin/dashboard/administrator/list">List all administrators</Link>
-                    <Link className="btn btn-primary" to="/admin/dashboard/administrator/add">Add new administrator</Link>
-                    </div>
-            </div>
-        </div>
-
-</div>
-
-
- );
-    
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
