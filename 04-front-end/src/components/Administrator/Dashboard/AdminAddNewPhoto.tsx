@@ -73,9 +73,13 @@ const AdminAddNewPhoto: React.FC<IAddPhotoProps> = ({
           Close
         </Button>
        
+        { file !== undefined ? (
           <Button variant="primary" onClick={doAddPhoto}>
             Save
           </Button>
+        ) : (
+          ""
+        )}
       </Modal.Footer>
     </Modal>
   );
