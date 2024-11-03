@@ -88,6 +88,7 @@ const AdminAddNewNews: React.FC<IAddNewsProps> = ({
   };
 
   return (
+
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Add new News to {category.name}</Modal.Title>
@@ -103,6 +104,7 @@ const AdminAddNewNews: React.FC<IAddNewsProps> = ({
           file={file}
           setFile={setFile}
         />
+      {errorMessage}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { api, apiForm } from "../../../api/api";
+import { apiForm } from "../../../api/api";
 import { Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,7 @@ const AdminAddNewPhoto: React.FC<IAddPhotoProps> = ({
   loadPhotos,
   handleClose,
 }) => {
-  const [, setErrorMessage ] = useState<string>("");
+  const [ errorMessage ,setErrorMessage ] = useState<string>("");
   const [file, setFile] = useState<File>();
   const navigate = useNavigate();
 
@@ -67,6 +67,7 @@ const AdminAddNewPhoto: React.FC<IAddPhotoProps> = ({
           file={file}
           setFile={setFile}
         />
+         {errorMessage}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

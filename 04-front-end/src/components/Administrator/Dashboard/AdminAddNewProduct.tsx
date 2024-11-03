@@ -36,7 +36,7 @@ const AddNewProduct: React.FC<IAddProductProps> = ({
   handleClose,
   loadProducts,
 }) => {
-  const [, setErrorMessage ] = useState<string>("");
+  const [ errorMessage, setErrorMessage ] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [altText, setAlt] = useState<string>("");
@@ -126,6 +126,7 @@ const AddNewProduct: React.FC<IAddProductProps> = ({
           file={file}
           setFile={setFile}
         />
+         {errorMessage}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

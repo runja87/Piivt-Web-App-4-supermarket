@@ -10,7 +10,7 @@ import './UserContact.sass';
     const [title, setTitle] = useState<string>("");
     const [message, setMessage] = useState<string>("");
     const [email, setEmail] = useState<string>("");
-    const [, setErrorMessage] = useState<string>("");
+    const [ errorMessage, setErrorMessage] = useState<string>("");
 
 
 
@@ -87,6 +87,9 @@ import './UserContact.sass';
          <button type="submit" disabled={!hasChanges}>
           Submit
         </button>
+        <div className="error">
+        {errorMessage}
+        </div>
         </form>
       </div>
 

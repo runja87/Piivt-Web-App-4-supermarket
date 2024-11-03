@@ -27,7 +27,7 @@ const AdminAddNewPage: React.FC<IAddPageProps> = ({
   handleClose,
   loadPages,
 }) => {
-  const [,setErrorMessage ] = useState<string>("");
+  const [errorMessage,setErrorMessage ] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [altText, setAlt] = useState<string>("");
@@ -98,6 +98,7 @@ const AdminAddNewPage: React.FC<IAddPageProps> = ({
           file={file}
           setFile={setFile}
         />
+         {errorMessage}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

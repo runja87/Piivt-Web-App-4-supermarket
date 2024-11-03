@@ -26,7 +26,7 @@ const AddNewCategory: React.FC<IAddCategoryProps> = ({
 }) => {
   const [name, setName] = useState<string>("");
   const [categoryType, setCategoryType] = useState<any>(category.categoryType);
-  const [,setErrorMessage ] = useState<any>();
+  const [errorMessage,setErrorMessage ] = useState<any>();
   var   [parentCategoryId, setParentCategoryId] = useState<number>(category.categoryId);
   
   if(categoryType === "root"){
@@ -64,6 +64,7 @@ const AddNewCategory: React.FC<IAddCategoryProps> = ({
           parentCategoryId={parentCategoryId}
           setParentCategoryId={setParentCategoryId}
         />
+         {errorMessage}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
