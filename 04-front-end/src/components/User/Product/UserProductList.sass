@@ -1,0 +1,85 @@
+.ProductList
+  max-width: 600px
+  margin: 0 auto
+  padding: 20px
+  background-color: #f9f9f9
+  border-radius: 8px
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1)
+
+  ul
+    list-style: none
+    padding: 0
+    margin: 0
+
+  .product-item
+    margin-bottom: 20px
+    border: 1px solid #ccc
+    padding: 15px
+    border-radius: 8px
+    background-color: #f9f9f9
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1)
+
+  .product-image
+    width: 100%
+    max-height: 480px
+    object-fit: cover
+    border-radius: 8px
+    margin-bottom: 10px
+
+  .no-image-placeholder
+    background-color: #e0e0e0
+    border: 2px dashed #aaa
+    border-radius: 8px
+    padding: 20px
+    text-align: center
+    color: #555
+    font-style: italic
+    margin-bottom: 15px
+
+  .description
+    width: 100% 
+    word-wrap: break-word
+    overflow-wrap: break-word
+    word-break: break-word
+    white-space: normal
+
+  .metadata
+    font-size: 14px
+    color: #888
+    margin-top: 5px
+    font-style: italic
+
+
+@media (max-width: 768px)
+  .ProductList
+    padding: 15px
+    max-width: 90% 
+
+    .product-item
+      padding: 10px
+
+      .description
+        width: 100% 
+
+      .metadata
+        font-size: 13px
+
+    .product-image
+      max-height: 300px 
+
+@media (max-width: 480px)
+  .ProductList
+    padding: 10px
+    max-width: 100% 
+
+    .product-item
+      padding: 10px
+
+      .description
+        width: 100% 
+
+      .metadata
+        font-size: 12px
+
+    .product-image
+      max-height: 200px 
