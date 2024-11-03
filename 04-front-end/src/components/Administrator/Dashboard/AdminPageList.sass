@@ -1,0 +1,80 @@
+.admin-pages-container
+  padding:0px
+  max-width: 100%
+  margin: 0 auto
+
+  .btn-back, .btn-add
+    margin-bottom: 10px
+
+  .alert
+    margin-bottom: 20px
+
+  .table-wrapper
+    overflow-x: auto 
+    -webkit-overflow-scrolling: touch 
+    width: 100%
+    border: 1px solid #ddd
+    border-radius: 4px
+
+  .table
+    width: 100%
+    min-width: 800px 
+    border-collapse: collapse
+    font-size: 0.9em
+    text-align: left
+
+    th, td
+      padding: 8px 12px
+      border-bottom: 1px solid #ddd
+      white-space: nowrap 
+    th
+      background-color: #f2f2f2
+      font-weight: bold
+
+    .input-group, .form-group
+      margin-bottom: 10px
+
+    .btn-group
+      display: flex
+      justify-content: center
+
+    .form-control-sm, .btn-sm
+      font-size: 0.8em
+      padding: 5px 8px
+
+   
+    td.title, td.alt
+      max-width: 150px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+
+
+  @media (max-width: 768px)
+    .admin-pages-container
+      padding: 15px
+
+    .table
+      font-size: 0.8em
+
+      th, td
+        padding: 6px 8px
+
+    .btn-back, .btn-add
+      width: 100%
+      text-align: center
+      margin-bottom: 15px
+
+  @media (max-width: 480px)
+    .admin-pages-container
+      padding: 10px
+
+    .table
+      font-size: 0.8em
+
+      .btn-sm
+        font-size: 0.7em
+        padding: 4px 6px
+
+      .form-control-sm
+        padding: 4px
