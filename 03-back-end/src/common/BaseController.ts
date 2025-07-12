@@ -34,7 +34,7 @@ export default abstract class BaseController {
     const year = now.getFullYear();
     const month = ((now.getMonth() + 1) + "").padStart(2, "0");
 
-    const uploadDestinationRoot = config.server.static.path + "/";
+    const uploadDestinationRoot = config.server.backend.static.path + "/";
     const destinationDirectory = config.fileUploads.destinationDirectoryRoot + year + "/" + month + "/";
     mkdirSync(uploadDestinationRoot + destinationDirectory, {
       recursive: true,
@@ -104,7 +104,7 @@ export default abstract class BaseController {
 
   private async createResizedPhotos(fileName: string, directory: string, resizeOptions: IResize) {
     const config: IConfig = DevConfig;
-    await sharp(config.server.static.path + "/" + directory + fileName)
+    await sharp(config.server.backend.static.path + "/" + directory + fileName)
       .resize({
         width: resizeOptions.width,
         height: resizeOptions.height,
@@ -112,7 +112,7 @@ export default abstract class BaseController {
         background: resizeOptions.defaultBackground,
         withoutEnlargement: true,
       })
-      .toFile(config.server.static.path + "/" + directory + resizeOptions.prefix + fileName);
+      .toFile(config.server.backend.static.path + "/" + directory + resizeOptions.prefix + fileName);
 
   }
 

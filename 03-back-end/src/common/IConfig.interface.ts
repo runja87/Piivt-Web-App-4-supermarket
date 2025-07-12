@@ -43,17 +43,25 @@ export interface IAuthTokenOptions {
 export default interface IConfig {
 
 server: {
-    port: number,
-    static: {
-        path: string,
-        route: string,
-        cacheControl: boolean,
-        dotfiles: "deny" | "allow",
-        etag: boolean,
-        index: string | false,
-        maxAge: number
-
+    backend: {
+        host: string,
+        port: number,
+        static: {
+            path: string,
+            route: string,
+            cacheControl: boolean,
+            dotfiles: "deny" | "allow",
+            etag: boolean,
+            index: string | false,
+            maxAge: number
+    
+        }
     },
+    frontend: {
+        host: string,
+        port: number,
+    }
+
 },
 logging: {
     path: string,
