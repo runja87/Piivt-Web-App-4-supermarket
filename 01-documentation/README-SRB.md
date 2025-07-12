@@ -46,7 +46,7 @@ Realizovati veb sajt supermarketa koji ima ulogu veb prezentacije sa više kateg
 • username                  VARCHAR    64              UQ                       korisničko ime
 • email                     VARCHAR    64              UQ                       adresa el. pošte
 • password_hash             VARCHAR   128                                       heš lozinke
-• password_reset_link       VARCHAR   255              UQ      D NULL           link za resetovanje pass
+• password_reset_link       VARCHAR   255                      D NULL           link za resetovanje pass
 • password_reset_code       VARCHAR   128              UQ      D NULL           kod za resetovanje pass
 • is_active                 TINYINT      1                 UN  D 1              status naloga| 1 = active
 • created_at                TIMESTAMP                          D CT             vreme kreiranja naloga
