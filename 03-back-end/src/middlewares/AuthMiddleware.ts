@@ -60,14 +60,17 @@ export default class AuthMiddleware {
             
         }
 
-        if(typeof token !== "string" || token.length === 0){
+        if(typeof token !== "string" || token.length === 0 || token === undefined){
             throw{
                 status: 401,
                 message: "Token not specified!",
             };
         }
         try{
-            const tokenVerification = jwt.verify(token, DevConfig.auth.administrator.tokens[type].keys.public);
+            const tokenVerification = jwt.verify(token, DevConfig.auth.administrator.tokens[type].keys.public, {
+                algorithms: [DevConfig.auth.administrator.algorithm],
+                issuer: DevConfig.auth.administrator.issuer,
+            }) as IAdministratorTokenData;
             if (!tokenVerification){
                 throw{
                     status: 401,
@@ -93,5 +96,6 @@ export default class AuthMiddleware {
             };
         } 
     }
+    
 
 }

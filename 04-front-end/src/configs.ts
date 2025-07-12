@@ -1,17 +1,22 @@
-import IConfig from "./common/IConfig.interface"
+import IConfig from "./common/IConfig.interface";
+import AuthStore from "./stores/AuthStore";
+
 const DevConfig: IConfig = {
     domain: {
         name: "http://localhost",
-        port: 10000
+        port: 10000,
     },
     authorization: {
-        token: "Berrer TOKEN WILL GO HERE LATER"
+        get token() {
+            return `Bearer ${AuthStore.getState().authToken}`;
+        },
     },
     refresh: {
-        token: "REFRESH TOKEN CALL LOGIN WILL GO HERE LATER"
-    }
-
-}
+        get token() {
+            return `Bearer ${AuthStore.getState().refreshToken}`;
+        },
+    },
+};
 
 export default DevConfig;
 

@@ -5,17 +5,26 @@ import { readFileSync } from "fs";
 const DevConfig: IConfig = {
 
     server: {
-        port: 10000,
-        static: {
-            route: "/assets",
-            path: "./static",
-            cacheControl: true,
-            dotfiles: "deny",
-            etag: true,
-            index: false,
-            maxAge: 36000,
+        backend: {
+            host: "localhost",
+            port: 10000,
+            static: {
+                route: "/assets",
+                path: "./static",
+                cacheControl: true,
+                dotfiles: "deny",
+                etag: true,
+                index: false,
+                maxAge: 36000,
+            }
         },
+        frontend: {
+                host: "localhost",
+                port: 3000
+            }
     },
+
+
     logging: {
         path: "./logs",
         filename: "access.log",
@@ -80,17 +89,17 @@ const DevConfig: IConfig = {
             issuer: "Piivt",
             tokens: {
                 auth: {
-                    duration: 60 * 3, // For dev 24h, otherwise couple min.
+                    duration: 60 * 15, // For dev 24h, otherwise couple min.
                     keys: {
-                        public: readFileSync("./.keystore/app.public","ascii"),
-                        private: readFileSync("./.keystore/app.private","ascii"),
+                        public: readFileSync("./.keystore/appAuth.public","ascii"),
+                        private: readFileSync("./.keystore/appAuth.private","ascii"),
                     },
                 },
                 refresh: {
-                    duration: 60 * 60 * 24 * 30, // For dev 60 days, otherwise around month.
+                    duration: 60 * 60 * 6, // For dev 60 days, otherwise couple h.
                     keys: {
-                        public: readFileSync("./.keystore/app.public","ascii"),
-                        private: readFileSync("./.keystore/app.private","ascii"),
+                        public: readFileSync("./.keystore/appRefresh.public","ascii"),
+                        private: readFileSync("./.keystore/appRefresh.private","ascii"),
                     },
                 },
             },

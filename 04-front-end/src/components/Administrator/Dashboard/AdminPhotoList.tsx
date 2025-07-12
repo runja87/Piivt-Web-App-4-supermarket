@@ -25,71 +25,6 @@ export default function AdminPhotosList() {
   const [showAddPhoto, setShowAddPhoto] = useState(false);
   const config: IConfig = DevConfig;
 
-
-  const loadPhotos = useCallback(() => {
-    api("get", "/api/photos")
-      .then(res => {
-        if (res.status !== 'ok') {
-          setErrorMessage(res.data + "");
-        } else {
-          setPhotoData(res.data);
-        }
-      })
-      .catch(() => {
-        setErrorMessage("An error occurred: " + errorMessage);
-      });
-  }, [errorMessage]); 
-
-  useEffect(() => {
-    loadPhotos();
-  }, [loadPhotos]);
-  
-  const handleShowAddPhoto = () => setShowAddPhoto(true);
-  const handleCloseAddPhoto = () => setShowAddPhoto(false);
-
- 
-  return (
-    <div>
-      <Link className="btn btn-dark btn-sm" to="/admin/dashboard">
-        &laquo; Back to AdminDashboard
-      </Link>
-
-          <div>
-          <button
-            className="btn btn-primary btn-sm me-10"
-            onClick={handleShowAddPhoto}
-          >
-            Add New Photo
-          </button>
-
-          {showAddPhoto && (
-            <AdminAddNewPhoto
-              show={showAddPhoto}
-              handleClose={handleCloseAddPhoto}
-              loadPhotos={loadPhotos}
-            />
-          )}
-        </div>
-
-      <table className="table table-sm table-hover">
-        <thead>
-          <tr>
-            <th>Photo</th>
-            <th>Edit alt text</th>
-            <th>Change Photo</th>
-            <th>Save</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {photos.map((photo) => (
-            <AdminPhotosListRow key={"photo" + photo.photoId} photo={photo} loadPhotos={loadPhotos}/>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-
   function AdminPhotosListRow(props: IAdminPhotosListRowProperties) {
     const [altText, setAlt] = useState<string | undefined>(props.photo.altText);
     const [file, setFile] = useState<File | undefined>(undefined);
@@ -215,6 +150,71 @@ export default function AdminPhotosList() {
       </tr>
     );
   }
+
+
+  const loadPhotos = useCallback(() => {
+    api("get", "/api/photos")
+      .then(res => {
+        if (res.status !== 'ok') {
+          setErrorMessage(res.data + "");
+        } else {
+          setPhotoData(res.data);
+        }
+      })
+      .catch(() => {
+        setErrorMessage("An error occurred: " + errorMessage);
+      });
+  }, [errorMessage]); 
+
+  useEffect(() => {
+    loadPhotos();
+  }, [loadPhotos]);
+  
+  const handleShowAddPhoto = () => setShowAddPhoto(true);
+  const handleCloseAddPhoto = () => setShowAddPhoto(false);
+
+ 
+  return (
+    <div>
+      <Link className="btn btn-dark btn-sm" to="/admin/dashboard">
+        &laquo; Back to AdminDashboard
+      </Link>
+
+          <div>
+          <button
+            className="btn btn-primary btn-sm me-10"
+            onClick={handleShowAddPhoto}
+          >
+            Add New Photo
+          </button>
+
+          {showAddPhoto && (
+            <AdminAddNewPhoto
+              show={showAddPhoto}
+              handleClose={handleCloseAddPhoto}
+              loadPhotos={loadPhotos}
+            />
+          )}
+        </div>
+
+      <table className="table table-sm table-hover">
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Edit alt text</th>
+            <th>Change Photo</th>
+            <th>Save</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {photos.map((photo) => (
+            <AdminPhotosListRow key={"photo" + photo.photoId} photo={photo} loadPhotos={loadPhotos}/>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
   
 }
 

@@ -85,12 +85,12 @@ async function main() {
 
 
 
-    application.use(config.server.static.route, express.static(config.server.static.path, {
-        index: config.server.static.index,
-        cacheControl: config.server.static.cacheControl,
-        maxAge: config.server.static.maxAge,
-        etag: config.server.static.etag,
-        dotfiles: config.server.static.dotfiles
+    application.use(config.server.backend.static.route, express.static(config.server.backend.static.path, {
+        index: config.server.backend.static.index,
+        cacheControl: config.server.backend.static.cacheControl,
+        maxAge: config.server.backend.static.maxAge,
+        etag: config.server.backend.static.etag,
+        dotfiles: config.server.backend.static.dotfiles
     }));
     for (const router of AplicationRouters) {
         router.setupRoutes(application, applicationResources);
@@ -100,7 +100,7 @@ async function main() {
         res.sendStatus(404);
     });
 
-    application.listen(config.server.port);
+    application.listen(config.server.backend.port);
 }
 
 process.on('uncaughtException', error => {

@@ -7,7 +7,7 @@ import IAdministratorTokenData from "./dto/IAdministratorTokenData.dto";
 import DevConfig from "../../configs";
 import AuthMiddleware from "../../middlewares/AuthMiddleware";
 
-
+const activeRefreshTokens = new Set<string>();
 export default class AuthController extends BaseController {
 
     public async administratorLogin(req: Request, res: Response){
@@ -39,12 +39,12 @@ export default class AuthController extends BaseController {
                     username: administrator.username,
                 };
                 
-            const authToken = jwt.sign(tokenData, DevConfig.auth.administrator.tokens.auth.keys.private, {
+            const authToken = jwt.sign({...tokenData, tokenType: "auth", iat: Math.floor(Date.now() / 1000),}, DevConfig.auth.administrator.tokens.auth.keys.private, {
                 algorithm: DevConfig.auth.administrator.algorithm,
                 issuer: DevConfig.auth.administrator.issuer,
                 expiresIn: DevConfig.auth.administrator.tokens.auth.duration,
             });
-            const refreshToken = jwt.sign(tokenData, DevConfig.auth.administrator.tokens.refresh.keys.private, {
+            const refreshToken = jwt.sign({ ...tokenData, tokenType: "refresh", iat: Math.floor(Date.now() / 1000),}, DevConfig.auth.administrator.tokens.refresh.keys.private, {
                 algorithm: DevConfig.auth.administrator.algorithm,
                 issuer: DevConfig.auth.administrator.issuer,
                 expiresIn: DevConfig.auth.administrator.tokens.refresh.duration,
@@ -53,6 +53,7 @@ export default class AuthController extends BaseController {
                 res.send({
                     authToken: authToken,
                     refreshToken: refreshToken,
+                    id: administrator.administratorId,
                 });
             })
             .catch(error =>{
@@ -64,32 +65,42 @@ export default class AuthController extends BaseController {
 
         }
 
+      
+
         administratorRefresh(req: Request, res: Response) {
-            const refreshTokenHeader: string = req.headers?.authorization ?? "";
-
-            try{
+            const refreshTokenHeader: string = req.headers?.authorization ?? "";             
+            if (activeRefreshTokens.has(refreshTokenHeader)) {
+                return res.status(429).send("Refresh request already in progress.");
+            }
+            activeRefreshTokens.add(refreshTokenHeader);
+        
+            try {
                 const validateTokenData = AuthMiddleware.validateTokenAs(refreshTokenHeader, "refresh");
-
+        
                 const tokenData: IAdministratorTokenData = {
                     administratorId: validateTokenData.administratorId,
                     username: validateTokenData.username,
-                }
-
-                const authToken = jwt.sign(tokenData, DevConfig.auth.administrator.tokens.auth.keys.private, {
-                    algorithm: DevConfig.auth.administrator.algorithm,
-                    issuer: DevConfig.auth.administrator.issuer,
-                    expiresIn: DevConfig.auth.administrator.tokens.auth.duration,
-                });
-                res.send({
-                    authToken: authToken,
-                });
-
-            }catch (error){
+                };
+        
+                const authToken = jwt.sign(
+                    { ...tokenData, tokenType: "auth" },
+                    DevConfig.auth.administrator.tokens.auth.keys.private,
+                    {
+                        algorithm: DevConfig.auth.administrator.algorithm,
+                        issuer: DevConfig.auth.administrator.issuer,
+                        expiresIn: DevConfig.auth.administrator.tokens.auth.duration,
+                    }
+                );
+        
+                res.send({ authToken });
+        
+            } catch (error) {
                 res.status(error?.status ?? 500).send(error?.message);
+            } finally {
+                activeRefreshTokens.delete(refreshTokenHeader);
             }
         }
-
-       
+        
     }
 
 

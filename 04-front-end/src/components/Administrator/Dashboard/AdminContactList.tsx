@@ -20,7 +20,65 @@ interface DeleteWarningProps {
 export default function AdminContactList() {
   const [contact, setContactData] = useState<IContact[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  
+  function AdminContactListRow(props: IAdminContactListRowProperties) {
+    const [firstName] = useState<string>(props.contact.firstName);
+    const [lastName] = useState<string>(props.contact.lastName);
+    const [title] = useState<string>(props.contact.title);
+    const [message] = useState<string>(props.contact.message);
+    const [email] = useState<string>(props.contact.email);
+    const [sentAt] = useState<string>(props.contact.createdAt);
 
+    function formatDateTime(dateString: moment.MomentInput) {
+      return moment(dateString).format("DD.MM.YYYY HH:mm:ss");
+    }
+
+    const dateTime = formatDateTime(sentAt);
+
+    const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+    const handleClose = () => setShowDeleteWarning(false);
+
+    const handleDelete = () => {
+      api("delete", `/api/message/${props.contact.messageId}`)
+        .then((res) => {
+          if (res.status !== "ok") {
+            return setErrorMessage("Could not delete this message!");
+          }
+          loadMessages();
+        })
+        .catch((err) => {
+          setErrorMessage("An error occurred: " + err.message);
+        });
+
+      setShowDeleteWarning(false);
+    };
+
+    return (
+      <tr>
+        <td>{firstName}</td>
+        <td>{lastName}</td>
+        <td>{title}</td>
+        <td>{email}</td>
+        <td className="message-column">{message}</td>
+        <td>{dateTime}</td>
+
+        <td className="delete-column">
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={() => setShowDeleteWarning(true)}
+          >
+            Delete
+          </button>
+          <DeleteWarning
+            show={showDeleteWarning}
+            handleClose={handleClose}
+            handleDelete={handleDelete}
+            contact={props.contact}
+          />
+        </td>
+      </tr>
+    );
+  }
 
 
   const loadMessages = useCallback(() => {
@@ -71,65 +129,7 @@ export default function AdminContactList() {
     </div>
   );
 
-  function AdminContactListRow(props: IAdminContactListRowProperties) {
-    const [firstName] = useState<string>(props.contact.firstName);
-    const [lastName] = useState<string>(props.contact.lastName);
-    const [title] = useState<string>(props.contact.title);
-    const [message] = useState<string>(props.contact.message);
-    const [email] = useState<string>(props.contact.email);
-    const [sentAt] = useState<string>(props.contact.createdAt);
 
-    function formatDateTime(dateString: moment.MomentInput) {
-      return moment(dateString).format("DD.MM.YYYY HH:mm:ss");
-    }
-
-    const dateTime = formatDateTime(sentAt);
-
-    const [showDeleteWarning, setShowDeleteWarning] = useState(false);
-    const handleClose = () => setShowDeleteWarning(false);
-
-    const handleDelete = () => {
-      api("delete", `/api/message/${props.contact.messageId}`)
-        .then((res) => {
-          if (res.status !== "ok") {
-            return setErrorMessage("Could not delete this message!");
-          }
-          loadMessages();
-          console.log("Item deleted");
-        })
-        .catch((err) => {
-          setErrorMessage("An error occurred: " + err.message);
-        });
-
-      setShowDeleteWarning(false);
-    };
-
-    return (
-      <tr>
-        <td>{firstName}</td>
-        <td>{lastName}</td>
-        <td>{title}</td>
-        <td>{email}</td>
-        <td className="message-column">{message}</td>
-        <td>{dateTime}</td>
-
-        <td className="delete-column">
-          <button
-            className="btn btn-danger btn-sm"
-            onClick={() => setShowDeleteWarning(true)}
-          >
-            Delete
-          </button>
-          <DeleteWarning
-            show={showDeleteWarning}
-            handleClose={handleClose}
-            handleDelete={handleDelete}
-            contact={props.contact}
-          />
-        </td>
-      </tr>
-    );
-  }
 }
 
 const DeleteWarning: React.FC<DeleteWarningProps> = ({
