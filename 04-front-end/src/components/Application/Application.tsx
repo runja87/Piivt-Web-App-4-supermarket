@@ -1,10 +1,8 @@
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './Application.sass';
 import { Container } from 'react-bootstrap';
-
 import { Route, Routes } from 'react-router-dom';
 import Menu from '../Menu/Menu';
-
 import UserCategoryPage from '../User/Page/UserPageList';
 import AdminDashboard from '../Administrator/Dashboard/AdminDashboard';
 import AdminCategoryList from '../Administrator/Dashboard/AdminCategoryList';
@@ -24,13 +22,19 @@ import './Application.sass';
 import UserHomePageList from '../User/Home/UserHomePageList';
 import UserLogin from '../User/Login/UserLogin';
 import UserCategoryList from '../Category/UserCategoryList';
-import AdminPasswordResetPage from '../Administrator/AdminPasswordResetPage';
+import { Provider } from 'react-redux';
+import AuthStore from '../../stores/AuthStore';
+import CheckEmail from '../Administrator/CheckEmail';
+import RequestResetPassword from '../Administrator/RequestResetPassword';
+import ResetPassword from '../Administrator/ResetPassword';
+
 
 
 
 
 function Application() {
   return (
+    <Provider store={AuthStore}>
     <Container className='aplication'>
      <Menu/>
      
@@ -44,7 +48,9 @@ function Application() {
   <Route path='/category' element={ <UserCategoryList/> }/>
   <Route path='/message' element={ <Messages/>}/>
   <Route path='/auth/administrator/login' element={ <UserLogin/>}/>
-  <Route path='/auth/password-reset' element={ <AdminPasswordResetPage/>}/>
+  <Route path='/auth/request-password-reset' element={ <RequestResetPassword/>}/>
+  <Route path='/check-email' element={ <CheckEmail/>}/>
+  <Route path='/auth/password-reset/:code' element={ <ResetPassword/>}/>
   <Route path='/' element={ <UserHomePageList/> }/>
   {/* Admin Routes */}
   <Route path='/admin/dashboard' element={ <AdminDashboard/> } />
@@ -64,6 +70,7 @@ function Application() {
   
 
     </Container>
+    </Provider>
   );
 }
 
