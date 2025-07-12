@@ -12,8 +12,9 @@ import * as uuid from 'uuid';
 import { IRequestResetPasswordDto, RequestResetPasswordValidator } from "./dto/IRequestResetPassword.dto";
 import { IResetPasswordDto, ResetPasswordValidator } from "./dto/IResetPassword.dto";
 import IAddAdministrator from "./dto/IAddAdministrator.dto";
+import IConfig from "../../common/IConfig.interface";
 
-
+const config: IConfig = DevConfig;
 const app = express();
 app.use(express.json());
 export default class AdministratorController extends BaseController {
@@ -70,12 +71,12 @@ export default class AdministratorController extends BaseController {
             message: "Duplicate entry for administrator.",
             data: { error },
           });
-      }
-      console.error(error);
-      return res.status(500).send({
-        message: "An error occurred while adding the administrator.",
-        data: { error },
-      });
+        }
+        console.error(error);
+        return res.status(500).send({
+          message: "An error occurred while adding the administrator.",
+          data: { error },
+        });
       });
   }
 
@@ -83,12 +84,13 @@ export default class AdministratorController extends BaseController {
     const administrator: AdministratorModel = new AdministratorModel();
     const id: number = +req.params?.aid;
     const body = req.body as IEditAdministratorDto;
-    const adminId = req.authorisation?.administratorId;
-    const isAuthorizedToUpdate = true;
+    const isAuthorizedToUpdate = administrator.administratorId == id;
     const isAdminAction =
       body.username !== undefined ||
       body.password !== undefined ||
       body.email !== undefined;
+
+
 
     if (!EditAdministratorValidator(body)) {
       return res.status(400).send(EditAdministratorValidator.errors);
@@ -127,20 +129,20 @@ export default class AdministratorController extends BaseController {
         .then((result) => {
           return res.send(result);
 
-    })
-  } catch (error) {
-    if (error?.code === 'ER_DUP_ENTRY') {
-      return res.status(409).send({
-        message: "Duplicate entry for administrator.",
+        })
+    } catch (error) {
+      if (error?.code === 'ER_DUP_ENTRY') {
+        return res.status(409).send({
+          message: "Duplicate entry for administrator.",
+          data: { error },
+        });
+      }
+
+      return res.status(500).send({
+        message: "An error occurred while updating the administrator.",
         data: { error },
       });
-  }
-
-  return res.status(500).send({
-    message: "An error occurred while updating the administrator.",
-    data: { error },
-  });
-}
+    }
   }
 
 
@@ -155,7 +157,7 @@ export default class AdministratorController extends BaseController {
     this.services.administrator
       .getByPasswordResetCode(code)
       .then((result) => {
-        if (result === null) {
+        if (!result || result.length === 0) {
           throw {
             status: 404,
             message: "Password reset token not valid!!",
@@ -164,14 +166,22 @@ export default class AdministratorController extends BaseController {
         return result;
       })
       .then((result) => {
-        const id = result[0].administratorId;
+        const admin = result[0];
+        const tokenCreatedAt = new Date(admin.createdAt);
+        const now = new Date();
+        if (now.getTime() > tokenCreatedAt.getTime() + 5 * 60 * 1000) {
+          throw {
+            status: 400,
+            message: "Password reset token has expired. Please request a new reset link.",
+          };
+        }
         if (body.password1 === body.password2) {
           const password = body.password2 as string;
           const passwordHash = bcrypt.hashSync(password, 10);
           const serviceData: IEditAdministrator = {
             password_hash: passwordHash,
           };
-          this.services.administrator.edit(id, serviceData, {
+          this.services.administrator.edit(admin.administratorId, serviceData, {
             removePassword: true,
             removePasswordResetCode: true,
           });
@@ -193,35 +203,58 @@ export default class AdministratorController extends BaseController {
     const body = req.body as IRequestResetPasswordDto;
 
     if (!RequestResetPasswordValidator(body)) {
-      return res.status(400).send(RequestResetPasswordValidator.errors);
+      return res.status(400).send({
+        message: "Invalid email format. Please provide a valid email address.",
+      });
     }
+
     this.services.administrator
       .getByEmail(body.email)
       .then((result) => {
-        if (result.length === undefined || result.length === 0) {
-          return res
-            .status(404)
-            .send("Admin account for provided email address does not exists!");
+        if (!Array.isArray(result) || result.length === 0) {
+          throw {
+            status: 404,
+            message: "Admin account for provided email address does not exist.",
+          };
         }
-        const passwordResetLink =
-          "http://localhost:10000/api/administrator/resetpassword/";
-        const passwordResetCode = uuid.v4();
+        const passwordResetLink = `${config.server.frontend.host}:${config.server.frontend.port}/auth/password-reset/`;
+        const passwordResetCode =  `${uuid.v4()}.${Date.now() + 5 * 60 * 1000}`;
         const serviceData: IEditAdministrator = {
           password_reset_link: passwordResetLink,
           password_reset_code: passwordResetCode,
         };
-        this.services.administrator.edit(
-          result[0].administratorId,
-          serviceData,
-          { removePassword: true, removePasswordResetCode: true }
-        );
 
-        return this.sendPasswordResetEmail(res, result[0]);
+        return this.services.administrator
+          .edit(result[0].administratorId, serviceData, {
+            removePassword: true,
+            removePasswordResetCode: false,
+          })
+          .then(() => {
+            return this.services.administrator.getById(result[0].administratorId, {
+              removePassword: true,
+              removePasswordResetCode: false,
+            });
+          });
+      })
+      .then((updatedAdmin) => {
+        if (!updatedAdmin || !updatedAdmin.passwordResetLink || !updatedAdmin.passwordResetCode) {
+          throw new Error("Failed to generate a valid password reset link or code.");
+        }
+        return this.sendPasswordResetEmail(res, updatedAdmin);
       })
       .catch((error) => {
-        return res.status(500).send(error?.message);
+        console.error(error);
+
+        if (error?.status && error?.message) {
+          return res.status(error.status).send({ message: error.message });
+        }
+
+        return res.status(500).send({
+          message: error?.message || "An unexpected error occurred.",
+        });
       });
   }
+
 
   private async sendPasswordResetEmail(
     res: Response,
@@ -230,13 +263,17 @@ export default class AdministratorController extends BaseController {
     return new Promise((reject) => {
       const transport = nodemailer.createTransport({
         from: administrator.email,
-
         service: DevConfig.mail.service,
         auth: {
           user: DevConfig.mail.auth.email,
           pass: DevConfig.mail.auth.pass,
         },
       });
+      if (!administrator.passwordResetLink || !administrator.passwordResetCode) {
+        throw new Error("Password reset link or code is missing!");
+      }
+      const resetLink = `http://${administrator.passwordResetLink}${administrator.passwordResetCode}`;
+      const unsubscribeLink = `http://${administrator.passwordResetLink}Unsubscribe`;
       const mailOptions: Mailer.Options = {
         to: administrator.email,
         subject: "Passwort reset link",
@@ -246,13 +283,13 @@ export default class AdministratorController extends BaseController {
             <body>
             <p>
             Dear ${administrator.username}, <br>
+            <br>
             Click on the following link to reset your password:
+             <a href="${resetLink}">Reset password</a>
+             <p>Pasword reset link is valid for next 5 minutes!</p>
             </p>
-            <p style = "text-align: center; padding: 10px;">
-            <a href= "${administrator.passwordResetLink}${administrator.passwordResetCode}">Reset password</a>
-
             <p>
-            <a href= "${administrator.passwordResetLink}$"/unsubscribe>Unsubscribe</a>
+            <a href= "${unsubscribeLink}">Unsubscribe</a>
             </p>
             
             </body>

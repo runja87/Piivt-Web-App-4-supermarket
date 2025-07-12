@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import IAdministrator from "../../../models/IAdministrator.model";
 import { api } from "../../../api/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,21 +9,25 @@ interface IAdministratorRowProperties {
   onAdministratorUpdated: () => void;
 }
 
-export default function AdminAdministratorList() {
+
+  function AdminAdministratorList() {
   const [administrators, setAdministrators] = useState<IAdministrator[]>([]);
   const admins = Array.isArray(administrators) ? administrators : [];
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  function loadAdministrators() {
+  const loadAdministrators = useCallback(() => {
     api("get", "/api/administrator").then((res) => {
       if (res.status === "error") {
         return setErrorMessage(res.data + "");
       }
-
+  
       setAdministrators(res.data);
     });
-  }
-  useEffect(loadAdministrators, []);
+  }, []); 
+
+  useEffect(() => {
+    loadAdministrators();
+  }, [loadAdministrators]); 
 
   function AdminAdministratorRow(props: IAdministratorRowProperties) {
     const [editPasswordVisible, setEditPasswordVisible] =
@@ -53,7 +57,6 @@ export default function AdminAdministratorList() {
           if (res.status === "error") {
             return setErrorMessage("test");
           } else {
-            setAdministrators(res.data);
             refreshList();
           }
         })
@@ -250,3 +253,5 @@ export default function AdminAdministratorList() {
     </div>
   );
 }
+export default React.memo(AdminAdministratorList);
+
