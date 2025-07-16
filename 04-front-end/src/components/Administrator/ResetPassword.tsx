@@ -15,16 +15,17 @@ export default function ResetPassword() {
             "Error! Reason: " + JSON.stringify(res.data)
           );
         }
-        window.location.href = "/admin/dashboard";
+        window.location.href = "/auth/administrator/login";
       })
       .catch((error) => {
-        if (error.message.includes("password2")) {
+        if (error.message.includes("confirm")) {
           setErrorMessage(
             "Please confirm your new password."
           );
-        } else if (error.message.includes("match")
+        } else if (error.message.includes("don't match")
           
         ) {
+
           setErrorMessage("Passwords do not match!");
        
         }else if (error.message.includes("must match pattern")
