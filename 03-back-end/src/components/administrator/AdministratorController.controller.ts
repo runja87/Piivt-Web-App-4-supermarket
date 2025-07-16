@@ -167,15 +167,25 @@ export default class AdministratorController extends BaseController {
       })
       .then((result) => {
         const admin = result[0];
-        const tokenCreatedAt = new Date(admin.createdAt);
-        const now = new Date();
-        if (now.getTime() > tokenCreatedAt.getTime() + 5 * 60 * 1000) {
+        const parts = admin.passwordResetCode.split(".");
+        const timestampStr = parts[1];
+        const tokenCreatedAtMs = Number(timestampStr);
+        if (isNaN(tokenCreatedAtMs)) {
+  throw {
+    status: 400,
+    message: "Invalid password reset token format.",
+  };
+}
+        const nowMs = Date.now();
+        if (nowMs > tokenCreatedAtMs) {
           throw {
             status: 400,
             message: "Password reset token has expired. Please request a new reset link.",
           };
         }
-        if (body.password1 === body.password2) {
+    
+
+        if (body.password1.toLocaleLowerCase() === body.password2.toLocaleLowerCase()) {
           const password = body.password2 as string;
           const passwordHash = bcrypt.hashSync(password, 10);
           const serviceData: IEditAdministrator = {
