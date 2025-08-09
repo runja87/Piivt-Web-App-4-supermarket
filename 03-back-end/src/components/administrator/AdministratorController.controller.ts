@@ -13,6 +13,7 @@ import { IRequestResetPasswordDto, RequestResetPasswordValidator } from "./dto/I
 import { IResetPasswordDto, ResetPasswordValidator } from "./dto/IResetPassword.dto";
 import IAddAdministrator from "./dto/IAddAdministrator.dto";
 import IConfig from "../../common/IConfig.interface";
+import { delay } from "../../helpers/Utils";
 
 const config: IConfig = DevConfig;
 const app = express();
@@ -171,11 +172,11 @@ export default class AdministratorController extends BaseController {
         const timestampStr = parts[1];
         const tokenCreatedAtMs = Number(timestampStr);
         if (isNaN(tokenCreatedAtMs)) {
-  throw {
-    status: 400,
-    message: "Invalid password reset token format.",
-  };
-}
+          throw {
+            status: 400,
+            message: "Invalid password reset token format.",
+          };
+        }
         const nowMs = Date.now();
         if (nowMs > tokenCreatedAtMs) {
           throw {
@@ -183,7 +184,7 @@ export default class AdministratorController extends BaseController {
             message: "Password reset token has expired. Please request a new reset link.",
           };
         }
-    
+
 
         if (body.password1.toLocaleLowerCase() === body.password2.toLocaleLowerCase()) {
           const password = body.password2 as string;
@@ -203,9 +204,8 @@ export default class AdministratorController extends BaseController {
       })
 
       .catch((error) => {
-        setTimeout(() => {
-          return res.status(error?.status ?? 500).send(error?.message);
-        }, 500);
+        delay(500);
+        return res.status(error?.status ?? 500).send(error?.message);
       });
   }
 
@@ -228,7 +228,7 @@ export default class AdministratorController extends BaseController {
           };
         }
         const passwordResetLink = `${config.server.frontend.host}:${config.server.frontend.port}/auth/password-reset/`;
-        const passwordResetCode =  `${uuid.v4()}.${Date.now() + 5 * 60 * 1000}`;
+        const passwordResetCode = `${uuid.v4()}.${Date.now() + 5 * 60 * 1000}`;
         const serviceData: IEditAdministrator = {
           password_reset_link: passwordResetLink,
           password_reset_code: passwordResetCode,
@@ -253,8 +253,6 @@ export default class AdministratorController extends BaseController {
         return this.sendPasswordResetEmail(res, updatedAdmin);
       })
       .catch((error) => {
-        console.error(error);
-
         if (error?.status && error?.message) {
           return res.status(error.status).send({ message: error.message });
         }
