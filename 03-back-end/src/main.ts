@@ -4,7 +4,6 @@ import IConfig from "./common/IConfig.interface";
 import DevConfig from "./configs";
 import * as fs from "fs";
 import fileUpload = require("express-fileupload");
-import * as morgan from "morgan";
 import IApplicationResources from "./common/IApplicationResources.interface";
 import * as mysql2 from 'mysql2/promise';
 import AplicationRouters from "./routers";
@@ -15,6 +14,9 @@ import ProductService from "./components/product/ProductService.service";
 import PhotoService from "./components/photo/PhotoService.service";
 import PageService from "./components/page/PageService.service";
 import ContactService from "./components/contact/ContactService.service";
+import { LoggerMiddleware } from "./middlewares/LoggerMiddleware";
+
+
 
 
 const application: express.Application = express();
@@ -22,14 +24,13 @@ const config: IConfig = DevConfig;
 
 async function main() {
 
+    application.use(LoggerMiddleware);
+
     fs.mkdirSync(config.logging.path, {
         mode: 777,
         recursive: true,
     });
 
-    application.use(morgan(config.logging.format, {
-        stream: fs.createWriteStream(config.logging.path + "/" + config.logging.filename, { flags: 'a' }),
-    }));
 
     const db = await mysql2.createConnection({
         host: config.database.host,
@@ -56,32 +57,32 @@ async function main() {
 
         }
     };
-        applicationResources.services.category = new CategoryService(applicationResources);
-        applicationResources.services.news = new NewsService(applicationResources);
-        applicationResources.services.administrator = new AdministratorService(applicationResources);
-        applicationResources.services.product = new ProductService(applicationResources);
-        applicationResources.services.photo = new PhotoService(applicationResources);
-        applicationResources.services.page = new PageService(applicationResources);
-        applicationResources.services.contact = new ContactService(applicationResources);
-        
-       
+    applicationResources.services.category = new CategoryService(applicationResources);
+    applicationResources.services.news = new NewsService(applicationResources);
+    applicationResources.services.administrator = new AdministratorService(applicationResources);
+    applicationResources.services.product = new ProductService(applicationResources);
+    applicationResources.services.photo = new PhotoService(applicationResources);
+    applicationResources.services.page = new PageService(applicationResources);
+    applicationResources.services.contact = new ContactService(applicationResources);
+
+
 
     application.use(cors());
     application.use(express.json());
 
-    application.use(express.urlencoded({extended: true})),
-    application.use(fileUpload({
-        limits: {
-            files: config.fileUploads.maxFiles,
-            fileSize: config.fileUploads.maxFileSize,
-        },
-        abortOnLimit: true,
-        useTempFiles: true,
-        tempFileDir: config.fileUploads.tempFileDirectory,
-        createParentPath: true,
-        safeFileNames: true,
-        preserveExtension: true, 
-    }));
+    application.use(express.urlencoded({ extended: true }));
+        application.use(fileUpload({
+            limits: {
+                files: config.fileUploads.maxFiles,
+                fileSize: config.fileUploads.maxFileSize,
+            },
+            abortOnLimit: true,
+            useTempFiles: true,
+            tempFileDir: config.fileUploads.tempFileDirectory,
+            createParentPath: true,
+            safeFileNames: true,
+            preserveExtension: true,
+        }));
 
 
 
@@ -96,10 +97,11 @@ async function main() {
         router.setupRoutes(application, applicationResources);
     }
 
+    
+
     application.use((req, res) => {
         res.sendStatus(404);
     });
-
     application.listen(config.server.backend.port);
 }
 
