@@ -44,7 +44,9 @@ export default abstract class BaseController {
     const uploadPromises = fileFieldNames.map(fileFieldName => {
       return new Promise<string | null>((resolve, reject) => {
         const file = req.files[fileFieldName] as UploadedFile;
-        const type = filetype(readFileSync(file.tempFilePath))[0]?.typename;
+        const buffer = readFileSync(file.tempFilePath);
+        const bytes  = Uint8Array.from(buffer);
+        const type = filetype(bytes)[0]?.typename;
 
         if (!config.fileUploads.photos.allowedTypes.includes(type)) {
           unlinkSync(file.tempFilePath);
