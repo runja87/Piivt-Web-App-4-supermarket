@@ -6,7 +6,7 @@ Ovo je projekat za ispit iz predmeta Praktikum - Internet i veb tehnologije.
 
 Ime i prezime: Nenad Miražić
 Broj indeksa: 2015/200-454
-Školska godina: 2022/2023
+Školska godina: 2024/2025
 
 ********************************************************************************
 
@@ -169,7 +169,7 @@ contact                                                                         
   - Brisanje kontakt poruka        (briše odabranu kontakt poruku)
 - Izmena administratorskog naloga  (može da menja korisničko ime, email, password samo na svom nalogu i da kreira i deaktivira druge admin naloge)
 
-- Korisnik/posetilac sajta
+- Korisnik/posetilac
 
 - Prijava na administratorski nalog                      (prijavljuje se na admin nalog)
 - Zahtevanje linka za novu lozinku                       (zahteva link za novu lozinku za admin pristup)
@@ -186,4 +186,13 @@ contact                                                                         
 - Slanje kontakt poruke                                  (šalje kontakt poruke)
 
 
-## Mockup GUI interfejsa
+## Mockup GUI interfejsa Moble/Desktop
+
+- Logovanje korisnika/posetioca na admin dashboard
+![AdminLogin](../02-resources/AdminLogin.png)
+
+- Restart administratorske lozinke
+![PasswordReset](../02-resources/PasswordReset.png)
+
+- Pretraga proizvoda
+![ProductSearch](../02-resources/ProductSearch.png)
