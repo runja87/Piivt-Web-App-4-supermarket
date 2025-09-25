@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import * as express from "express";
 import * as cors from "cors";
 import IConfig from "./common/IConfig.interface";
