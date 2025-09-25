@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 export default function AdminDashboard() {
   return (
     <div className="container-fluid">
+       <p className="h3 text-center fw-bold text-dark">Administrator Dashboard</p>
       <div className="row">
         {/* Using two columns for layout */}
         {[
