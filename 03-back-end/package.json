@@ -13,8 +13,10 @@
   "dependencies": {
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
+    "az": "^0.2.3",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
     "express": "^4.17.1",
     "express-fileupload": "^1.4.0",
     "image-size": "^1.0.2",
