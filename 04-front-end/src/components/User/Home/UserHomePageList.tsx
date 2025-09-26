@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../../api/api";
 import IProduct from "../../../models/IProduct.model";
 import ICategory from "../../../models/ICategory.model";
-import './UserHomePageList.sass';
+import "./UserHomePageList.sass";
 import DevConfig from "../../../configs";
 import IConfig from "../../../common/IConfig.interface";
 
@@ -31,8 +31,14 @@ const UserHomePageList: React.FC = () => {
               if (category.threeLevelStructure.length === 0) {
                 flatCategories.push(category);
               }
-              if (category.threeLevelStructure && category.threeLevelStructure.length > 0) {
-                flatCategories = [...flatCategories, ...flattenCategories(category.threeLevelStructure)];
+              if (
+                category.threeLevelStructure &&
+                category.threeLevelStructure.length > 0
+              ) {
+                flatCategories = [
+                  ...flatCategories,
+                  ...flattenCategories(category.threeLevelStructure),
+                ];
               }
             });
             return flatCategories;
@@ -57,26 +63,31 @@ const UserHomePageList: React.FC = () => {
     setRelatedProducts([]);
     setErrorMessage(null);
     setSelectedProduct(null);
-  
+
     const queryParams = new URLSearchParams({
       search: searchTerm,
       category,
       minPrice: minPrice?.toString() ?? "",
       maxPrice: maxPrice?.toString() ?? "",
     }).toString();
-  
+
     api("get", `/api/category/product/search?${queryParams}`)
       .then((response) => {
         if (response.status === "ok" && response.data) {
-          let products = response.data.products || []; 
+          let products = response.data.products || [];
           let relatedProducts = response.data.relatedProducts || [];
           if (products.length > 0) {
-            const productIds = new Set(products.map((product: { productId: IProduct; }) => product.productId));
+            const productIds = new Set(
+              products.map(
+                (product: { productId: IProduct }) => product.productId
+              )
+            );
             relatedProducts = relatedProducts.filter(
-            (relatedProduct: { productId: IProduct; }) => !productIds.has(relatedProduct.productId)
-);
+              (relatedProduct: { productId: IProduct }) =>
+                !productIds.has(relatedProduct.productId)
+            );
 
-            setProducts(products); 
+            setProducts(products);
             setRelatedProducts(relatedProducts);
           } else {
             setErrorMessage("No products found");
@@ -104,45 +115,68 @@ const UserHomePageList: React.FC = () => {
   return (
     <div className="user-home-page">
       <div className="search-bar">
-        <input 
-          type="text" 
-          placeholder="Search..." 
-          value={searchTerm} 
-          onChange={(e) => setSearchTerm(e.target.value)} 
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="">Select Category</option>
+          <option value="">Select Product Category</option>
           {productCategories.map((cat) => (
-            <option key={cat.categoryId} value={cat.categoryId}>{cat.name}</option>
+            <option key={cat.categoryId} value={cat.categoryId}>
+              {cat.name}
+            </option>
           ))}
         </select>
-        <input 
-          type="number" 
-          placeholder="Min Price" 
-          value={minPrice ?? ""} 
-          onChange={(e) => setMinPrice(e.target.value && Number(e.target.value) >= 0 ? Number(e.target.value) : null)}
+        <input
+          type="number"
+          placeholder="Min Price"
+          value={minPrice ?? ""}
+          onChange={(e) =>
+            setMinPrice(
+              e.target.value && Number(e.target.value) >= 0
+                ? Number(e.target.value)
+                : null
+            )
+          }
         />
-        <input 
-          type="number" 
-          placeholder="Max Price" 
-          value={maxPrice ?? ""} 
-          onChange={(e) => setMaxPrice(e.target.value && Number(e.target.value) >= 0 ? Number(e.target.value) : null)}
+        <input
+          type="number"
+          placeholder="Max Price"
+          value={maxPrice ?? ""}
+          onChange={(e) =>
+            setMaxPrice(
+              e.target.value && Number(e.target.value) >= 0
+                ? Number(e.target.value)
+                : null
+            )
+          }
         />
         <button onClick={handleSearch}>Search</button>
       </div>
-  
+
       <div className="content">
         <h1>Product Search</h1>
         {selectedProduct ? (
           <div className="product-details">
             <div className="title-back">
-            <h2>Product Detals</h2>
-            <button onClick={handleBack}>&lt; Back to Results</button>
+              <h2>Product Detals</h2>
+              <button onClick={handleBack}>&lt; Back to Results</button>
             </div>
             {selectedProduct.photos && selectedProduct.photos.length > 0 ? (
               <img
-                alt={selectedProduct.altText || selectedProduct.photos[0]?.altText || "No description available"}
-                src={`${config.domain.name}:${config.domain.port}/assets/${selectedProduct.photos[0].filePath.replace(selectedProduct.photos[0].name,"medium-" + selectedProduct.photos[0].name)}`}
+                alt={
+                  selectedProduct.altText ||
+                  selectedProduct.photos[0]?.altText ||
+                  "No description available"
+                }
+                src={`${config.domain.name}:${
+                  config.domain.port
+                }/assets/${selectedProduct.photos[0].filePath.replace(
+                  selectedProduct.photos[0].name,
+                  "medium-" + selectedProduct.photos[0].name
+                )}`}
                 className="product-image"
               />
             ) : (
@@ -151,23 +185,40 @@ const UserHomePageList: React.FC = () => {
               </div>
             )}
             <h3>{selectedProduct.name}</h3>
-            <p className="description"> Description: {selectedProduct.description}</p>
+            <p className="description">
+              {" "}
+              Description: {selectedProduct.description}
+            </p>
             <p>Regular price: {selectedProduct.price}$</p>
             {selectedProduct.isOnDiscount && (
-              <p>Discounted Price: { (selectedProduct.price - selectedProduct.price * +selectedProduct.discount).toFixed(2) }$ Discount applied: - {(100 * +selectedProduct.discount)} %</p>
+              <p>
+                Discounted Price:{" "}
+                {(
+                  selectedProduct.price -
+                  selectedProduct.price * +selectedProduct.discount
+                ).toFixed(2)}
+                $ Discount applied: - {100 * +selectedProduct.discount} %
+              </p>
             )}
-             <p> </p>
+            <p> </p>
             <p>Sku no: {selectedProduct.sku}</p>
             <p>Supply: {selectedProduct.supply}</p>
-            <p className="metadata">Metadata: {selectedProduct.altText || "No metadata available"}</p>
+            <p className="metadata">
+              Metadata: {selectedProduct.altText || "No metadata available"}
+            </p>
             <h3>Related Products</h3>
             <div className="related-products">
               {relatedProducts && relatedProducts.length > 0 ? (
                 relatedProducts.map((productRelated) => (
                   <div key={productRelated.productId} className="product-item">
-                    {productRelated.photos && productRelated.photos.length > 0 ? (
+                    {productRelated.photos &&
+                    productRelated.photos.length > 0 ? (
                       <img
-                        alt={productRelated.altText || productRelated.photos[0]?.altText || "No description available"}
+                        alt={
+                          productRelated.altText ||
+                          productRelated.photos[0]?.altText ||
+                          "No description available"
+                        }
                         src={
                           `${config.domain.name}:${config.domain.port}/assets/` +
                           productRelated.photos[0].filePath.replace(
@@ -184,7 +235,9 @@ const UserHomePageList: React.FC = () => {
                     )}
                     <h2>{productRelated.name}</h2>
                     <p>{productRelated.price} Rsd</p>
-                    <button onClick={() => handleViewMore(productRelated)}>View more</button>
+                    <button onClick={() => handleViewMore(productRelated)}>
+                      View more
+                    </button>
                   </div>
                 ))
               ) : (
@@ -201,7 +254,11 @@ const UserHomePageList: React.FC = () => {
                   <div key={productSearch.productId} className="product-item">
                     {productSearch.photos && productSearch.photos.length > 0 ? (
                       <img
-                        alt={productSearch.altText || productSearch.photos[0]?.altText || "No description available"}
+                        alt={
+                          productSearch.altText ||
+                          productSearch.photos[0]?.altText ||
+                          "No description available"
+                        }
                         src={
                           `${config.domain.name}:${config.domain.port}/assets/` +
                           productSearch.photos[0].filePath.replace(
@@ -218,14 +275,15 @@ const UserHomePageList: React.FC = () => {
                     )}
                     <h2>{productSearch.name}</h2>
                     <p>Regular price: {productSearch.price}$</p>
-                    <button onClick={() => handleViewMore(productSearch)}>View more</button>
+                    <button onClick={() => handleViewMore(productSearch)}>
+                      View more
+                    </button>
                   </div>
                 ))
               ) : (
                 <p>No products found</p>
               )}
             </div>
-            
           </>
         )}
       </div>
