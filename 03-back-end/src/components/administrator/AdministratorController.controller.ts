@@ -280,8 +280,8 @@ export default class AdministratorController extends BaseController {
       if (!administrator.passwordResetLink || !administrator.passwordResetCode) {
         throw new Error("Password reset link or code is missing!");
       }
-      const resetLink = `http://${administrator.passwordResetLink}${administrator.passwordResetCode}`;
-      const unsubscribeLink = `http://${administrator.passwordResetLink}Unsubscribe`;
+      const resetLink = `${administrator.passwordResetLink}${administrator.passwordResetCode}`;
+      const unsubscribeLink = `${administrator.passwordResetLink}Unsubscribe`;
       const mailOptions: Mailer.Options = {
         to: administrator.email,
         subject: "Passwort reset link",
