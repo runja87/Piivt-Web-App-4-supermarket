@@ -23,7 +23,7 @@ const AddNewsValidator = ajv.compile({
         title: {
             type: "string",
             minLength: 4,
-            maxLength: 64,
+            maxLength: 128,
         },
         content: {
             type: "string",

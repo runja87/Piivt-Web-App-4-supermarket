@@ -44,8 +44,8 @@ const SendMessageValidator = ajv.compile({
         },
         title: {
             type: "string",
-            minLength: 4,
-            maxLength: 64,
+            minLength: 2,
+            maxLength: 8,
         },
         message: {
             type: "string",
