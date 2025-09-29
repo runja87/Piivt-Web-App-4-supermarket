@@ -25,7 +25,7 @@ export default class AuthController extends BaseController {
       const administrator = result[0];
 
       if (!bcrypt.compareSync(data.password, administrator.passwordHash)) {
-        return res.status(404).json({ message: "Wrong username or password!" });
+        return res.status(401).json({ message: "Wrong username or password!" });
       }
 
       const tokenData: IAdministratorTokenData = {
